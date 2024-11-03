@@ -4,174 +4,116 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: sans-serif;
-  background-color: #f5f5f5;
-  color: #333;
-}
-
 header {
-  background-color: #fff;
+  font-family: sans-serif;
+  background-color: #00462a;
+  color:#f8f8f8;
   padding: 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 75px;
+  
 }
 
-header h1 {
-  font-family: 'Newsreader';
-  font-size: 40px;
-  font-weight: 400;
-  color: #3E6332;
-}
-
-nav ul {
-  list-style: none;
-  display: flex;
-  gap: 50px;
-  align-items: center;
-}
-
-nav ul li a {
+header a {
   text-decoration: none;
-  color: #333;
+  color:inherit;
+}
+body {
+  
+  margin-bottom: 20px;
+  font-family: sans-serif;
+  background-color: #eeeeee;
+  line-height: 1.8;
 }
 
-.user-info {
+.container {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  margin: 0 auto;
 }
 
-.seller-badge {
-  background-color: #3E6332;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-}
-
-.profile-icon {
-  width: 30px;
-  height: 30px;
-  background-color: #ccc;
-  border-radius: 50%;
-}
-
-.products {
+.sidebar {
+  width: 25%;
+  background-color: white;
+  color: #36AE92;
   padding: 20px;
-  align-items: center;
+  min-height: 100vh;
+  text-align: center;
 }
 
-.products h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
+.sidebar .profile img {
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
+  margin-bottom: 10px;
+  align-content: center;
 }
 
-.filter-category {
-  text-align: right;
-  margin-bottom: 20px;
-  position: absolute;
-  top: 100px;
-  right: 100px;
+.sidebar .profile p {
+  font-size: 18px;
 }
 
-.filter-category button {
-  background-color: #f0f0f0;
-  font-weight: bold;
-  border: 2px solid #ddd;
-  padding: 10px;
-  border-radius: 20px;
-}
-
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  justify-items: center;
-}
-
-.product-card {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 50px;
-  display: flex;
-  flex-direction: row;
-  gap: 50px;
-  position: relative;
-  align-items: center;
-  max-width: 600px;
-  width: 100%;
-}
-
-.product-seller {
-  position: absolute;
-  top: 20px;
-  left: 50px;
-  background-color: #f0f0f0;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 12px;
-  font-weight: bold;
-  color: black;
-}
-
-.product-image {
-  width: 120px;
-  height: 120px;
-  background-color: #f0f0f0;
-  border-radius: 5px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.product-image img{
-  max-width: 100%;
-  max-height: 100%;
-  object-fit:cover;
-}
-
-.product-info {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  gap: 5px;
-}
-
-.product-name, .product-price, .product-status, .product-description {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-
-.product-rating{
-  font-size: 25px;
-  color: black
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 5px;
+.changepsi {
   margin-top: 20px;
-}
-
-.pagination button {
-  background-color: #f0f0f0; 
-  border: 1px solid #ccc;
-  padding: 10px 15px; 
+  padding: 10px;
+  background-color: #36AE92;
+  border: none;
+  color: white;
   cursor: pointer;
-  border-radius: 8px;
+  width: 100%;
+  border-radius: 5px;
+}
+.addpro {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #00462a;
+  border: none;
+  color: white;
+  cursor: pointer;
+  width: 100%;
+  border-radius: 5px;
 }
 
-.pagination button:hover {
-  background-color: #e0e0e0; 
+.main-board {
+  width: 75%;
+  padding: 15px;
 }
 
-.pagination button:active {
-  background-color: #d0d0d0; 
-  border-color: #999; 
+.store-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.store-info .info-item {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 48%;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-list table {
+  margin-top: 20px;
+  width: 100%;
+  padding: 20px;
+  border-radius: 10px;
+  width: 95%;
+  background-color: white;
+  align-content: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-list table th, .product-list table td {
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.product-list table th {
+  background-color: #00462a;
+  color:white;
 }
