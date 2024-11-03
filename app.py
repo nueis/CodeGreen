@@ -101,7 +101,7 @@ def review_list():
 
     total_pages = (len(reviews) + reviews_per_page - 1) // reviews_per_page 
 
-    return render_template("reviews.html", reviews=paginated_reviews, page=page, total_pages=total_pages)
+    return render_template("reviewList.html", reviews=paginated_reviews, page=page, total_pages=total_pages)
 
 @app.route('/myreviews')
 def myreview_list():
@@ -122,7 +122,7 @@ def myreview_list():
 
     total_pages = (len(reviews) + reviews_per_page - 1) // reviews_per_page 
 
-    return render_template("reviews.html", reviews=paginated_reviews, page=page, total_pages=total_pages)
+    return render_template("myreviewList.html", reviews=paginated_reviews, page=page, total_pages=total_pages)
 
 
 
