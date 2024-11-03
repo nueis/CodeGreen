@@ -1,0 +1,40 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+env.bak/
+OSWF/
+
+# Flask uploads folder
+static/uploads/
+
+# Python egg files
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Configuration files
+*.env
+*.local
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Pytest cache
+.cache/
