@@ -8,17 +8,7 @@
     margin: 0;
     padding: 0;
 }
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    background-color: #f8f9fa;
-    padding: 10px;
-}
-.navbar a {
-    margin-right: 10px;
-    text-decoration: none;
-    color: #000;
-}
+
 .container {
     display: flex;
     justify-content: space-between;
@@ -36,4 +26,10 @@ h2 {
     border: none;
     padding: 10px 15px;
     cursor: pointer;
+}
+
+.product-image {
+    width: 300px; 
+    height: auto; 
+    object-fit: contain; 
 }
