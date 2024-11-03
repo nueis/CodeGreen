@@ -103,5 +103,28 @@ def review_list():
 
     return render_template("reviews.html", reviews=paginated_reviews, page=page, total_pages=total_pages)
 
+@app.route('/myreviews')
+def myreview_list():
+     # Sample data for testing layout
+    reviews = [
+        {"image_url": "../static/images/product.png", "title": "Great Product!", "nickname": "User1", "rating": 4.5},
+        {"image_url": "../static/images/product.png", "title": "Very useful", "nickname": "User1", "rating": 4.0},
+        {"image_url": "../static/images/product.png", "title": "Highly recommend", "nickname": "User1", "rating": 5.0},
+    ]
+     # Pagination settings
+    reviews_per_page = 8
+    page = request.args.get('page', 1, type=int)
+
+    start = (page - 1) * reviews_per_page
+    end = start + reviews_per_page
+
+    paginated_reviews = reviews[start:end]
+
+    total_pages = (len(reviews) + reviews_per_page - 1) // reviews_per_page 
+
+    return render_template("reviews.html", reviews=paginated_reviews, page=page, total_pages=total_pages)
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)
