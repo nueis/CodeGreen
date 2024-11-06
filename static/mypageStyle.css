@@ -4,28 +4,11 @@
   box-sizing: border-box;
 }
 
-header {
-  font-family: sans-serif;
-  background-color: #00462a;
-  color:#f8f8f8;
-  padding: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 75px;
-  
-}
 
-header a {
-  text-decoration: none;
-  color:inherit;
-}
 body {
-  
-  margin-bottom: 20px;
-  font-family: sans-serif;
-  background-color: #eeeeee;
+  margin: 20px;
+  font-family: Arial, sans-serif;
+  background-color: white;
   line-height: 1.8;
 }
 
@@ -36,14 +19,14 @@ body {
 
 .sidebar {
   width: 25%;
-  background-color: white;
+  background-color: #eeeeee;
   color: #36AE92;
   padding: 20px;
   min-height: 100vh;
   text-align: center;
 }
 
-.sidebar .profile img {
+.sidebar .profile-pic {
   width: 100px;
   height: 100px;
   border-radius: 100%;
@@ -51,11 +34,11 @@ body {
   align-content: center;
 }
 
-.sidebar .profile p {
+.sidebar p {
   font-size: 18px;
 }
 
-.changepsi {
+.profile {
   margin-top: 20px;
   padding: 10px;
   background-color: #36AE92;
@@ -65,7 +48,7 @@ body {
   width: 100%;
   border-radius: 5px;
 }
-.addpro {
+.sidebtn {
   margin-top: 20px;
   padding: 10px;
   background-color: #00462a;
@@ -81,13 +64,37 @@ body {
   padding: 15px;
 }
 
-.store-info {
+.mainbtn {
+  padding:5px;
+  background-color: #00462a;
+  border:none;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size:15px;
+}
+.myinfo {
   display: flex;
   justify-content: space-between;
   margin-bottom: 30px;
 }
 
-.store-info .info-item {
+.myinfo h1 {
+  font-size: 50px;
+  font-weight: bold;
+}
+
+.myinfo h2 {
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.myinfo h3 {
+  font-size: 21px;
+  font-weight: bold;
+}
+
+.myinfo .info-item {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
@@ -96,7 +103,7 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.product-list table {
+.sales-list table {
   margin-top: 20px;
   width: 100%;
   padding: 20px;
@@ -107,13 +114,13 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.product-list table th, .product-list table td {
+.sales-list table th, .sales-list table td {
   padding: 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
-.product-list table th {
+.sales-list table th {
   background-color: #00462a;
   color:white;
 }
