@@ -91,7 +91,7 @@ def home():
 def view_review():
     return render_template("mypage.html")
 
-@app.route("/productList")
+@app.route("/products")
 def product_list():
     products_per_page = 4
     page = request.args.get('page', 1, type=int)
@@ -105,7 +105,7 @@ def product_list():
 
     return render_template("productList.html", products=paginated_products, page=page, total_pages=total_pages)
 
-@app.route("/register", methods = ["GET", "POST"])
+@app.route("/products/register", methods = ["GET", "POST"])
 def register_item():
     if request.method == "POST":
 
@@ -142,7 +142,7 @@ def register_item():
 
     return render_template("register.html")
 
-@app.route("/product/<int:product_id>")
+@app.route("/products/<int:product_id>")
 def product_detail(product_id):
     product = products.get(product_id)
     if product:
