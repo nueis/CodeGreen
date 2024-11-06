@@ -19,22 +19,63 @@ user_purchases = {
     "user1": [1,2], # user1 purchased products with ID 1,2 
 }
 
-products[1] = {
+products[0] = {
     "product_id": 1,
     "name": "Product A",
     "price": 20000,
-    "image": "productA.jpg",
+    "image_url": "/static/images/bunny.png",
     "reviews": [],
     "rating": 0,
+    "seller_nickname": "Ewha",
+    "status":"new",
+    "description":"a new bunny keyring"
 }
 
-products[2] = {
+products[1] = {
     "product_id": 2,
     "name": "Product B",
     "price": 10000,
-    "image": "productB.jpg",
+    "image_url": "/static/images/badge.png",
     "reviews": [],
     "rating": 0,
+    "seller_nickname": "Choi",
+    "status":"new",
+    "description":"a new badge",
+}
+products[2] = {
+    "product_id": 3,
+    "name": "Product C",
+    "price": 20000,
+    "image_url": "/static/images/bunny.png",
+    "reviews": [],
+    "rating": 0,
+    "seller_nickname": "Ewha",
+    "status":"new",
+    "description":"a new bunny keyring"
+}
+
+products[3] = {
+    "product_id": 4,
+    "name": "Product D",
+    "price": 10000,
+    "image_url": "/static/images/badge.png",
+    "reviews": [],
+    "rating": 0,
+    "seller_nickname": "Choi",
+    "status":"new",
+    "description":"a new badge",
+}
+
+products[4] = {
+    "product_id": 5,
+    "name": "Product name",
+    "price": 10000,
+    "image_url": "/static/images/badge.png",
+    "reviews": [],
+    "rating": 0,
+    "seller_nickname": "seller nickname",
+    "status":"status: new",
+    "description":"description:a new badge",
 }
 
 
@@ -52,7 +93,17 @@ def view_review():
 
 @app.route("/productList")
 def product_list():
-    return render_template("productList.html")
+    products_per_page = 4
+    page = request.args.get('page', 1, type=int)
+
+    product_list = list(products.values())
+    start = (page - 1) * products_per_page
+    end = start + products_per_page
+    paginated_products = product_list[start:end]
+
+    total_pages = (len(product_list) + products_per_page - 1) // products_per_page 
+
+    return render_template("productList.html", products=paginated_products, page=page, total_pages=total_pages)
 
 @app.route("/register", methods = ["GET", "POST"])
 def register_item():
