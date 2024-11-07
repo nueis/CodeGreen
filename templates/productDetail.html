@@ -1,52 +1,18 @@
 {% extends "index.html" %}
 
 {% block head %}
-    <title>상품 상세 정보</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            background-color: #f8f9fa;
-            padding: 10px;
-        }
-        .navbar a {
-            margin-right: 10px;
-            text-decoration: none;
-            color: #000;
-        }
-        .container {
-            display: flex;
-            justify-content: space-between;
-            padding: 20px;
-        }
-        .left, .right {
-            width: 45%;
-        }
-        h2 {
-            margin: 0;
-        }
-        .button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            cursor: pointer;
-        }
-    </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='productDetailStyle.css') }}">
 {% endblock %}
 
 {% block content %}
+
     <div class="container">
         <div class="left">
-            <h2>상품 상세정보</h2>
-            <img src="https://via.placeholder.com/150" alt="상품 이미지">
+            <h2>상품 상세정보</h2> 
+            <img src="{{url_for('static', filename='uploads/' + product.image)}}" alt="Product Image" class="product-image">
             <h3>판매자</h3>
             <p>{{ product['seller_nickname'] }}님의 상품</p>
-
+            
             <h3>카테고리</h3>
             <p>{{ product['category'] }}</p>
 
@@ -82,4 +48,5 @@
             <button class="button">구매하기</button>
         </div>
     </div>
+
 {% endblock content %}

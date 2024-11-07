@@ -1,127 +1,126 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 
-  header {
-    font-family: sans-serif;
-    background-color: #00462a;
-    color:#f8f8f8;
-    padding: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 75px;
+body {
+  margin: 20px;
+  font-family: Arial, sans-serif;
+  background-color: white;
+  line-height: 1.8;
+}
 
-  }
+.container {
+  display: flex;
+  margin: 0 auto;
+}
 
-  .navlist {
-    margin-left: auto;
-  }
+.sidebar {
+  width: 25%;
+  background-color: #eeeeee;
+  color: #36AE92;
+  padding: 20px;
+  min-height: 100vh;
+  text-align: center;
+}
 
+.sidebar .profile-pic {
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
+  margin-bottom: 10px;
+  align-content: center;
+}
 
-  header a {
-    text-decoration: none;
-    color:inherit;
-    margin: 30px;
-  }
+.sidebar p {
+  font-size: 18px;
+}
 
-  body {
+.profile {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #36AE92;
+  border: none;
+  color: white;
+  cursor: pointer;
+  width: 100%;
+  border-radius: 5px;
+}
+.sidebtn {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #00462a;
+  border: none;
+  color: white;
+  cursor: pointer;
+  width: 100%;
+  border-radius: 5px;
+}
 
-    margin-bottom: 20px;
-    font-family: sans-serif;
-    background-color: #eeeeee;
-    line-height: 1.8;
-  }
+.main-board {
+  width: 75%;
+  padding: 15px;
+}
 
-  .container {
-    display: flex;
-    margin: 0 auto;
-  }
+.mainbtn {
+  padding:5px;
+  background-color: #00462a;
+  border:none;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size:15px;
+}
+.myinfo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
 
-  .sidebar {
-    width: 25%;
-    background-color: white;
-    color: #36AE92;
-    padding: 20px;
-    min-height: 100vh;
-    text-align: center;
-  }
+.myinfo h1 {
+  font-size: 50px;
+  font-weight: bold;
+}
 
-  .sidebar .profile img {
-    width: 100px;
-    height: 100px;
-    border-radius: 100%;
-    margin-bottom: 10px;
-    align-content: center;
-  }
+.myinfo h2 {
+  font-size: 35px;
+  font-weight: bold;
+}
 
-  .sidebar .profile p {
-    font-size: 18px;
-  }
+.myinfo h3 {
+  font-size: 21px;
+  font-weight: bold;
+}
 
-  .changepsi {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #36AE92;
-    border: none;
-    color: white;
-    cursor: pointer;
-    width: 100%;
-    border-radius: 5px;
-  }
-  .addpro {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #00462a;
-    border: none;
-    color: white;
-    cursor: pointer;
-    width: 100%;
-    border-radius: 5px;
-  }
+.myinfo .info-item {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 48%;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
-  .main-board {
-    width: 75%;
-    padding: 15px;
-  }
+.sales-list table {
+  margin-top: 20px;
+  width: 100%;
+  padding: 20px;
+  border-radius: 10px;
+  width: 95%;
+  background-color: white;
+  align-content: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
-  .store-info {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 30px;
-  }
+.sales-list table th, .sales-list table td {
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
 
-  .store-info .info-item {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 48%;
-    text-align: center;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-
-  .product-list table {
-    margin-top: 20px;
-    width: 100%;
-    padding: 20px;
-    border-radius: 10px;
-    width: 95%;
-    background-color: white;
-    align-content: center;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-
-  .product-list table th, .product-list table td {
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-
-  .product-list table th {
-    background-color: #00462a;
-    color:white;
-  }
+.sales-list table th {
+  background-color: #00462a;
+  color:white;
+}
