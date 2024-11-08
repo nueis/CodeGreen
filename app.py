@@ -18,6 +18,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
+# 화면 배치를 테스트 하기 위한 샘플 데이터
 products = {}
 users = {}
 # users = {
@@ -30,6 +31,70 @@ users = {}
 #         "phone": "1234567890"
 #     }
 # }
+reviews_data = {}
+
+user_purchases = {
+    "user1": [1,2], # user1 purchased products with ID 1,2 
+}
+
+products[0] = {
+    "product_id": 1,
+    "name": "Product A",
+    "price": 20000,
+    "image_url": "/static/images/bunny.png",
+    "reviews": [],
+    "rating": 0,
+    "seller_nickname": "Ewha",
+    "status":"new",
+    "description":"a new bunny keyring"
+}
+
+products[1] = {
+    "product_id": 2,
+    "name": "Product B",
+    "price": 10000,
+    "image_url": "/static/images/badge.png",
+    "reviews": [],
+    "rating": 0,
+    "seller_nickname": "Choi",
+    "status":"new",
+    "description":"a new badge",
+}
+products[2] = {
+    "product_id": 3,
+    "name": "Product C",
+    "price": 20000,
+    "image_url": "/static/images/bunny.png",
+    "reviews": [],
+    "rating": 0,
+    "seller_nickname": "Ewha",
+    "status":"new",
+    "description":"a new bunny keyring"
+}
+
+products[3] = {
+    "product_id": 4,
+    "name": "Product D",
+    "price": 10000,
+    "image_url": "/static/images/badge.png",
+    "reviews": [],
+    "rating": 0,
+    "seller_nickname": "Choi",
+    "status":"new",
+    "description":"a new badge",
+}
+
+products[4] = {
+    "product_id": 5,
+    "name": "Product name",
+    "price": 10000,
+    "image_url": "/static/images/badge.png",
+    "reviews": [],
+    "rating": 0,
+    "seller_nickname": "seller nickname",
+    "status":"status: new",
+    "description":"description:a new badge",
+}
 
 @app.route("/index")
 def index():
@@ -102,13 +167,26 @@ def view_review():
     else:
         return redirect(url_for("login"))
 
-@app.route("/productList")
+@app.route("/products")
 def product_list():
     if session['role'] == 'seller':
         return render_template("productListSeller.html", logged_in=('id' in session), user=session.get('nickname'))
     return render_template("productListBuyer.html", logged_in=('id' in session), user=session.get('nickname'))
 
 @app.route("/register", methods = ['GET', 'POST'])
+    products_per_page = 4
+    page = request.args.get('page', 1, type=int)
+
+    product_list = list(products.values())
+    start = (page - 1) * products_per_page
+    end = start + products_per_page
+    paginated_products = product_list[start:end]
+
+    total_pages = (len(product_list) + products_per_page - 1) // products_per_page 
+
+    return render_template("productList.html", products=paginated_products, page=page, total_pages=total_pages)
+
+@app.route("/products/register", methods = ["GET", "POST"])
 def register_item():
     if request.method == "POST":
 
@@ -148,7 +226,7 @@ def register_item():
 
     return render_template("register.html")
 
-@app.route("/product/<int:product_id>")
+@app.route("/products/<int:product_id>")
 def product_detail(product_id):
     product = products.get(product_id)
     if product:
@@ -206,6 +284,114 @@ def reviews():
         return render_template("productreviewsSeller.html", reviews=reviews_data, logged_in=('id' in session), user=session.get('nickname'))
 
     return render_template('productreviewsBuyer.html', reviews=reviews_data)
+
+@app.route('/reviews')
+def review_list():
+
+    # Sample data for testing layout
+    reviews = [
+        {"image_url": "../static/images/product.png", "title": "Great Product!", "nickname": "User1", "rating": 4.5},
+        {"image_url": "../static/images/product.png", "title": "Very useful", "nickname": "User2", "rating": 4.0},
+        {"image_url": "../static/images/product.png", "title": "Highly recommend", "nickname": "User3", "rating": 5.0},
+        {"image_url": "../static/images/product.png", "title": "Decent quality", "nickname": "User4", "rating": 3.5},
+        {"image_url": "../static/images/product.png", "title": "Worth the price", "nickname": "User5", "rating": 4.2},
+        {"image_url": "../static/images/product.png", "title": "Love it!", "nickname": "User6", "rating": 4.8},
+        {"image_url": "../static/images/product.png", "title": "Met expectations", "nickname": "User7", "rating": 4.0},
+        {"image_url": "../static/images/product.png", "title": "Good value", "nickname": "User8", "rating": 4.3},
+        {"image_url": "../static/images/product.png", "title": "Love it!", "nickname": "User6", "rating": 4.8},
+        {"image_url": "../static/images/product.png", "title": "Met expectations", "nickname": "User7", "rating": 4.0},
+        {"image_url": "../static/images/product.png", "title": "Good value", "nickname": "User8", "rating": 4.3},
+    ]
+     # Pagination settings
+    reviews_per_page = 8
+    page = request.args.get('page', 1, type=int)
+
+    start = (page - 1) * reviews_per_page
+    end = start + reviews_per_page
+
+    paginated_reviews = reviews[start:end]
+
+    total_pages = (len(reviews) + reviews_per_page - 1) // reviews_per_page 
+
+    return render_template("reviewList.html", reviews=paginated_reviews, page=page, total_pages=total_pages)
+
+@app.route('/myreviews')
+def myreview_list():
+     # Sample data for testing layout
+    reviews = [
+        {"image_url": "../static/images/product.png", "title": "Great Product!", "nickname": "User1", "rating": 4.5},
+        {"image_url": "../static/images/product.png", "title": "Very useful", "nickname": "User1", "rating": 4.0},
+        {"image_url": "../static/images/product.png", "title": "Highly recommend", "nickname": "User1", "rating": 5.0},
+    ]
+     # Pagination settings
+    reviews_per_page = 8
+    page = request.args.get('page', 1, type=int)
+
+    start = (page - 1) * reviews_per_page
+    end = start + reviews_per_page
+
+    paginated_reviews = reviews[start:end]
+
+    total_pages = (len(reviews) + reviews_per_page - 1) // reviews_per_page 
+
+    return render_template("myreviewList.html", reviews=paginated_reviews, page=page, total_pages=total_pages)
+
+@app.route('/reviews/register', methods = ['GET', 'POST'])
+def register_review():
+
+    user_id="user1"
+
+    if request.method == "POST":
+
+        user_nickname = request.form.get("user_nickname")
+        product_id = request.form.get("product_id", type=int)
+        review_title = request.form.get("review_title")
+        review_content = request.form.get("review_content")
+        rating = request.form.get("rating", type=int) 
+
+        # 이미지 파일 처리
+        image = request.files['image']
+        image_filename = f"{len(products) + 1}_{image.filename}"
+        image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+
+        # 리뷰 딕셔너리에 추가
+        review_id = len(reviews_data) + 1
+        new_review = {
+            "review_id": review_id,
+            "product_id": product_id,
+            "user_id": user_id,
+            "user_nickname": user_nickname ,
+            "review_title": review_title,
+            "review_content": review_content, 
+            "rating": rating,
+            "image": image_filename        
+        }
+        reviews_data[review_id] = new_review
+
+        # 상품 딕셔너리에 추가 
+        products[product_id]["reviews"].append(review_id)
+
+        product_reviews = [review["rating"] for review in reviews_data.values() if review["product_id"] == product_id]
+        valid_ratings = [r for r in product_reviews if r is not None]
+        products[product_id]["rating"] = sum(valid_ratings) / len(valid_ratings) if valid_ratings else 0
+
+        return redirect(url_for("review_detail", review_id=review_id))
+
+    # Get list of purchased products for the user
+    purchased_product_ids = user_purchases.get(user_id, [])
+    purchased_products = [products[pid] for pid in purchased_product_ids]
+
+    return render_template("reviewRegister.html", products=purchased_products)
+
+@app.route('/reviews/<int:review_id>')
+def review_detail(review_id):
+    review = reviews_data[review_id]
+    if review:
+        product = products.get(review["product_id"])
+        if product:
+            return render_template("reviewDetail.html", review=review, product=product)
+        return "제품을 찾을 수 없습니다.", 404
+    return "리뷰를 찾을 수 없습니다.", 404
 
 if __name__ == "__main__":
     app.run(debug=True)
