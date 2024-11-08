@@ -19,16 +19,17 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 products = {}
-users = {
-    "testuser@example.com": {
-        "id": "test",
-        "password": "test",
-        "nickname": "test",
-        "role": "seller",
-        "email": "test@test.com",
-        "phone": "1234567890"
-    }
-}
+users = {}
+# users = {
+#     "testuser@example.com": {
+#         "id": "test",
+#         "password": "test",
+#         "nickname": "test",
+#         "role": "seller",
+#         "email": "test@test.com",
+#         "phone": "1234567890"
+#     }
+# }
 
 @app.route("/index")
 def index():
@@ -41,13 +42,14 @@ def home():
 
     return render_template("homeBuyer.html", logged_in=('id' in session), user=session.get('nickname'))
 
-@app.route("/signUp", methods=["GET", "POST"])
+@app.route("/signUp", methods=['GET', 'POST'])
 def sign_up():
     if request.method == "POST":
-        id = request.form.get("user-id")
+        id = request.form.get("id")
         password = request.form.get("password")
         nickname = request.form.get("nickname")
         email = request.form.get("email")
+        phone = request.form.get("phone")
         role = request.form.get("role")
 
         # 사용자 정보를 딕셔너리에 저장
@@ -56,6 +58,7 @@ def sign_up():
             "password": password,
             "nickname": nickname,
             "email": email,
+            "phone": phone,
             "role": role
         }
 
@@ -64,9 +67,9 @@ def sign_up():
         session['nickname'] = nickname
         session['role'] = role
 
-        return redirect(url_for("home"))
+        return redirect(url_for("home", logged_in=('id' in session), user=session.get('nickname')))
 
-    return render_template('signUp.html')
+    return render_template('signUp.html', logged_in=False)
 
 @app.route("/productDetail")
 def view_produceDetail():
