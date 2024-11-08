@@ -1,0 +1,83 @@
+body {
+  font-family: 'Noto Sans', sans-serif;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 0;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-box {
+  background-color: #fff;
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.login-box h2 {
+  text-align: center;
+  color: #006400;
+  margin-bottom: 30px;
+  font-size: 1.8em;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+.input-group input[type="text"], .input-group input[type="password"] {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 15px;
+  background-color: #006400;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 1.2em;
+  transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: #228B22;
+}
+
+.extra-links {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.extra-links a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #006400;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.extra-links a:hover {
+  color: #228B22;
+}
