@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
 import os
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'  # 세션 관리를 위한 키 설정
+HTML_FOLDER = os.path.join(os.getcwd(), 'templates')  # templates 폴더 내에 HTML 파일을 저장
 
 @app.before_request
 def set_default_session_values():
@@ -174,6 +175,7 @@ def product_list():
     return render_template("productListBuyer.html", logged_in=('id' in session), user=session.get('nickname'))
 
 @app.route("/register", methods = ['GET', 'POST'])
+def product_list_new():
     products_per_page = 4
     page = request.args.get('page', 1, type=int)
 
@@ -392,6 +394,14 @@ def review_detail(review_id):
             return render_template("reviewDetail.html", review=review, product=product)
         return "제품을 찾을 수 없습니다.", 404
     return "리뷰를 찾을 수 없습니다.", 404
+
+@app.route('/html/<filename>')
+def open_html_file(filename):
+    # 주어진 HTML 파일을 templates 폴더에서 찾음
+    try:
+        return send_from_directory(HTML_FOLDER, filename)
+    except FileNotFoundError:
+        return "파일을 찾을 수 없습니다.", 404
 
 if __name__ == "__main__":
     app.run(debug=True)
