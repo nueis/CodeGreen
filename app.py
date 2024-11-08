@@ -73,5 +73,14 @@ def product_detail(product_id):
         return render_template("productDetail.html", product=product)
     return "상품을 찾을 수 없습니다.", 404
 
+@app.route('/productreviews')
+def reviews():
+    reviews_data = [
+        {"title": "리뷰 제목", "author": "작성자 닉네임", "date": "작성 날짜"},
+        {"title": "리뷰 제목", "author": "작성자 닉네임", "date": "작성 날짜"},
+        {"title": "리뷰 제목", "author": "작성자 닉네임", "date": "작성 날짜"},
+    ]
+    return render_template('productreviews.html', reviews=reviews_data)
+
 if __name__ == "__main__":
     app.run(debug=True)
