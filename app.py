@@ -19,11 +19,11 @@ def index():
 
 @app.route("/")
 def home():
-    return render_template("homeSeller.html")
+    return render_template("homeBuyer.html")
 
 @app.route("/mypage")
 def view_review():
-    return render_template("mypage.html")
+    return render_template("mypageBuy.html")
 
 @app.route("/productList")
 def product_list():
