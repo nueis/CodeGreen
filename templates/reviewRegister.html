@@ -1,0 +1,92 @@
+{% extends "index.html" %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='reviewRegisterStyle.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="review-form">
+    <form method="POST" enctype="multipart/form-data" action="{{ url_for('register_review') }}">
+        <div class="form-grid">
+            <div class="image-section">
+                <div class="product-image-placeholder">
+                    
+                    <div class="file-input-wrapper">
+                        <input type="file" id="image" name="image" accept="image/*" required>
+                    </div>
+                </div>
+                
+                <div class="star-rating">
+                    <input type="radio" id="star5" name="rating" value="5">
+                    <label for="star5">★</label>
+                    <input type="radio" id="star4" name="rating" value="4">
+                    <label for="star4">★</label>
+                    <input type="radio" id="star3" name="rating" value="3">
+                    <label for="star3">★</label>
+                    <input type="radio" id="star2" name="rating" value="2">
+                    <label for="star2">★</label>
+                    <input type="radio" id="star1" name="rating" value="1">
+                    <label for="star1">★</label>
+                </div>
+            </div>
+
+            <div class="form-fields">
+                <div class="form-group">
+                    <label>아이디</label>
+                    <input type="text" value="ewha1886" readonly class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>닉네임</label>
+                    <input type="text" value="ewha" readonly class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>상품 선택</label>
+                    <select id="product-select" name="product_id" required class="form-control">
+                        <option value="">리뷰 작성할 상품을 선택하세요</option>
+                        {% for product in products %}
+                            <option value="{{ product.product_id }}">{{ product.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>리뷰 제목</label>
+                    <input type="text" id="review-title" name="review_title" required class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label>리뷰 내용</label>
+                    <textarea id="review-content" name="review_content" class="form-control" maxlength="100"></textarea>
+                    <div class="character-count">0/100</div>
+                </div>
+
+                <button type="submit" class="submit-button">저장</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% block scripts %}
+<script>
+  document.getElementById('image').addEventListener('change', function() {
+    var productImage = document.getElementById('product-image');
+    var placeholder = document.querySelector('.product-image-placeholder');
+
+    if (this.files && this.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        productImage.src = e.target.result;
+        placeholder.classList.add('has-image');
+      }
+      reader.readAsDataURL(this.files[0]);
+    } else {
+      productImage.src = '../static/images/placeholder-image.svg';
+      placeholder.classList.remove('has-image');
+    }
+  });
+</script>
+{% endblock %}
+
+{% endblock content %}
