@@ -7,14 +7,8 @@
     <list default="true" id="7947c1bf-824a-482d-a724-04e16a1c827d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/findId.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/findId.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/homeBuyer.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/homeBuyer.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/indexBuyer.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/mypageBuy.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/mypageBuy.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/productDetail.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/productDetail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/productList.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/productList.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/productreviews.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/productreviews.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/productListSeller.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/productListSeller.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/productreviewsSeller.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/productreviewsSeller.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/register.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/signUp.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/signUp.html" afterDir="false" />
     </list>
@@ -52,23 +46,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Flask server.Flask (app.py).executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;develop/gh&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;aDefault&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Flask server.Flask (app.py).executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "develop/gh",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/gangheelee/Documents/GitHub/CodeGreen/templates",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "aDefault",
+    "settings.editor.selected.configurable": "preferences.keymap",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/templates" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/static" />
       <recent name="$PROJECT_DIR$/static/images" />
@@ -106,6 +104,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/CodeGreen$CodeGreen.coverage" NAME="CodeGreen Coverage Results" MODIFIED="1731046237034" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/CodeGreen$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1731047729406" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/CodeGreen$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1731050378636" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>
