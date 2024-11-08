@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 리뷰 조회</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='productreviewsStyle.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Ewha Market</h1>
+        <nav>
+            <a href="#">Browse</a>
+            <a href="#">Sell Products</a>
+            <a href="#">My page</a>
+            <div class="user-info">
+                <span class="badge">buyer</span>
+                buyer_nickname
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="review-section">
+            <h1>상품명</h1>
+            <p>전체 리뷰 조회</p>
+            <div class="review-list">
+                {% for i in range(5) %} 
+                <div class="review-card">
+                    <div class="review-img-placeholder"></div>
+                    <div class="review-details">
+                        <div class="review-header">
+                            <span class="stars">★★★★★</span>
+                            <h2 class="review-title">리뷰 제목</h2>
+                            <p class="review-author">작성자 닉네임</p>
+                        </div>
+                        <a href="#" class="view-more">전체 보기 ></a>
+                        <p class="review-date">작성 날짜</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="pagination">
+                <button>1</button>
+                <button>2</button>
+                <button>3</button>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

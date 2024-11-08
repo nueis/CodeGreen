@@ -2,8 +2,8 @@ from flask import Flask, render_template, url_for
 
 app = Flask(__name__)
 
-@app.route('/product/<int:product_id>')
-def product_detail(product_id):
+@app.route('/productdetail')  
+def productdetail():
     
     product = {
         'name': '토끼 키링',
@@ -22,7 +22,7 @@ def product_detail(product_id):
         ]
     }
     
-    return render_template('product_detail.html', product=product)
+    return render_template('productdetail.html', product=product)
 
 if __name__ == '__main__':
     app.run(debug=True)
