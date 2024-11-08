@@ -56,6 +56,7 @@ def sign_up():
 def view_produceDetail():
     # 예시로 product 정보를 설정했습니다.
     product = {
+        'image': 'product_detail_image.png',
         'seller_nickname': '이화인',
         'category': '생활 용품',
         'name': '물병',
@@ -179,7 +180,7 @@ def logout():
     session.pop('nickname', None)
     return redirect(url_for("home"))
 
-@app.route('/productreviews')
+@app.route('/review')
 def reviews():
     reviews_data = [
         {"title": "리뷰 제목", "author": "작성자 닉네임", "date": "작성 날짜"},
