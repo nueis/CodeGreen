@@ -1,0 +1,52 @@
+{% extends "indexSeller.html" %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='productDetailStyle.css') }}">
+{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="left">
+            <h2>상품 상세정보</h2> 
+            <img src="{{url_for('static', filename='uploads/' + product.image)}}" alt="Product Image" class="product-image">
+            <h3>판매자</h3>
+            <p>{{ product['seller_nickname'] }}님의 상품</p>
+            
+            <h3>카테고리</h3>
+            <p>{{ product['category'] }}</p>
+
+            <h3>상품 이름</h3>
+            <p>{{ product['name'] }}</p>
+
+            <h3>판매 가격</h3>
+            <p>{{ product['price'] }} 원</p>
+        </div>
+        <div class="right">
+            <h3>직거래 지역</h3>
+            <p>{{ product['location'] }}</p>
+
+            <h3>상품 상태</h3>
+            <p>{{ product['status'] }}</p>
+
+            <h3>별점</h3>
+            <p>{{ product['rating'] }} ⭐</p>
+
+            <h3>재고 수량</h3>
+            <p>{{ product['stock'] }}</p>
+
+            <h3>상세 설명</h3>
+            <p>{{ product['description'] }}</p>
+
+            <h3>리뷰</h3>
+            <ul>
+                {% for review in product['reviews'] %}
+                    <li>{{ review }}</li>
+                {% endfor %}
+            </ul>
+
+            <button class="button">구매하기</button>
+        </div>
+    </div>
+
+{% endblock content %}
