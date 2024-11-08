@@ -21,7 +21,7 @@ users = {
         "nickname": "test_nickname"
     }
 }
-reviews = {}
+reviews_data = {}
 
 user_purchases = {
     "user1": [1,2], # user1 purchased products with ID 1,2 
@@ -335,7 +335,7 @@ def register_review():
         image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
 
         # 리뷰 딕셔너리에 추가
-        review_id = len(reviews) + 1
+        review_id = len(reviews_data) + 1
         new_review = {
             "review_id": review_id,
             "product_id": product_id,
@@ -346,12 +346,12 @@ def register_review():
             "rating": rating,
             "image": image_filename        
         }
-        reviews[review_id] = new_review
+        reviews_data[review_id] = new_review
 
         # 상품 딕셔너리에 추가 
         products[product_id]["reviews"].append(review_id)
 
-        product_reviews = [review["rating"] for review in reviews.values() if review["product_id"] == product_id]
+        product_reviews = [review["rating"] for review in reviews_data.values() if review["product_id"] == product_id]
         valid_ratings = [r for r in product_reviews if r is not None]
         products[product_id]["rating"] = sum(valid_ratings) / len(valid_ratings) if valid_ratings else 0
 
@@ -365,7 +365,7 @@ def register_review():
 
 @app.route('/reviews/<int:review_id>')
 def review_detail(review_id):
-    review = reviews[review_id]
+    review = reviews_data[review_id]
     if review:
         product = products.get(review["product_id"])
         if product:
