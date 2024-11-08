@@ -19,16 +19,24 @@ def index():
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    return render_template("homeBuyer.html")
+
+@app.route("/home/buyer")
+def home_buyer():
+    return render_template("homeBuyer.html")
+
+@app.route("/home/seller")
+def home_seller():
+    return render_template("homeSeller.html")
 
 @app.route("/productDetail")
 def view_produceDetail():
-    # 예시로 product 정보를 설정했습니다.
     product = {
         'seller_nickname': '이화인',
         'category': '생활 용품',
         'name': '물병',
         'price': 15000,
+        'image': 'product_detail_image.png',
         'location': '서울특별시',
         'status': '새상품',
         'rating': 4.5,
@@ -37,20 +45,18 @@ def view_produceDetail():
         'reviews': ['좋아요!', '배송 빠르고 상품 좋아요.', '생각보다 크네요.']
     }
     return render_template("productDetail.html", product=product)
-    # return render_template("homeSeller.html")
 
 @app.route("/mypage")
 def view_review():
-    return render_template("mypage.html")
+    return render_template("mypageBuyer.html")
 
 @app.route("/productList")
 def product_list():
     return render_template("productList.html")
 
-@app.route("/register", methods = ["GET", "POST"])
+@app.route("/register", methods=["GET", "POST"])
 def register_item():
     if request.method == "POST":
-
         name = request.form.get("name")
         seller = request.form.get("seller")
         addr = request.form.get("addr")
@@ -75,7 +81,7 @@ def register_item():
             "location": addr,
             "status": status,
             "stock": stock,
-            "image": image_filename,  # 이미지 파일 이름 저장
+            "image": image_filename,
             "reviews": [],
             "rating": 0,
         }
@@ -93,7 +99,6 @@ def product_detail(product_id):
 
 @app.route('/productTest/<int:product_id>')
 def product_detail_Test(product_id):
-
     product = {
         'name': '토끼 키링',
         'seller': '이화연',
@@ -110,7 +115,16 @@ def product_detail_Test(product_id):
             {'nickname': 'user2', 'rating': 5, 'content': '마음에 들어요!'}
         ]
     }
-    return render_template('product_detail.html', product=product)
+    return render_template('templates/product_detail.html', product=product)
+
+@app.route('/signUp', methods=['GET', 'POST'])
+def sign_up():
+    if request.method == 'POST':
+        # 폼 데이터를 처리하고 저장하는 로직
+        # 회원가입 성공 후 홈 화면으로 이동
+        return redirect(url_for('home'))
+
+    return render_template('signUp.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
