@@ -29,3 +29,32 @@ class DBhandler:
 
         self.db.child("items").child(name).set(item_info)
         return True
+
+    def user_duplicate_check(self, email):
+        users = self.db.child("users").get()
+        print("users###", users.val())
+        if str(users.val()) == "None": # first registration
+            return True
+        else:
+            for res in users.each():
+                value = res.val()
+
+                if value['email'] == email:
+                    return False
+            return True
+
+    def insert_user(self, user_id, email, password, nickname, phone, role):
+        user_data = {
+            "email": email,
+            "password": password,
+            "nickname": nickname,
+            "phone": phone,
+            "role": role
+        }
+        if self.user_duplicate_check(email):
+            self.db.child("users").push(user_data)
+            print(user_data)
+            return True
+        else:
+            return False
+

@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from database import DBhandler
 import os
+import hashlib
+import sys
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'  # 세션 관리를 위한 키 설정
@@ -50,20 +52,41 @@ def sign_up():
     if request.method == "POST":
         id = request.form.get("id")
         password = request.form.get("password")
+        password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
         nickname = request.form.get("nickname")
         email = request.form.get("email")
         phone = request.form.get("phone")
         role = request.form.get("role")
 
+        if DB.insert_user(id, password_hash, nickname, email, phone, role):
+            return render_template("login.html")
+        else:
+            flash("user id already exists!")
+            return render_template("signUp.html")
+
         # 사용자 정보를 딕셔너리에 저장
-        users[email] = {
-            "id": id,
-            "password": password,
-            "nickname": nickname,
-            "email": email,
-            "phone": phone,
-            "role": role
-        }
+        # users[email] = {
+        #     "id": id,
+        #     "password": password,
+        #     "nickname": nickname,
+        #     "email": email,
+        #     "phone": phone,
+        #     "role": role
+        # }
+        #
+        # if not DB.check_user_exists(email):
+        #     users[email] = {
+        #         "id": id,
+        #         "password": password,
+        #         "nickname": nickname,
+        #         "email": email,
+        #         "phone": phone,
+        #         "role": role
+        #     }
+        #     DB.insert_user(id, email, password, nickname, phone, role)
+        #     session['id'] = id
+        #     return redirect(url_for("home"))
+        # return render_template("signUp.html", error="이메일이 이미 등록되어 있습니다.")
 
         # 회원가입 후 세션에 저장하여 자동 로그인 처리
         session['id'] = id
@@ -226,6 +249,7 @@ def login():
                 return redirect(url_for("home"))
 
         return render_template("login.html", error="아이디 또는 비밀번호가 잘못되었습니다.", logged_in=False)
+
     return render_template("login.html", logged_in=False)
 
 @app.route("/findId", methods=['GET', 'POST'])
