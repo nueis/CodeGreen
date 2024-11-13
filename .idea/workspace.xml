@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7947c1bf-824a-482d-a724-04e16a1c827d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/signUpValidation.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/signUpValidation.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/signUp.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/signUp.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Authentication/firebase_auth.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +47,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "develop/gh",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/gangheelee/Documents/GitHub/CodeGreen/templates",
+    "last_opened_file_path": "/Users/gangheelee/Documents/GitHub/CodeGreen",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -73,8 +70,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.17011.79" />
-        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.17011.79" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PY-242.23339.19" />
+        <option value="bundled-python-sdk-0029f7779945-399fe30bd8c1-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.23339.19" />
       </set>
     </attachedChunks>
   </component>
@@ -94,6 +91,7 @@
       <workItem from="1729640852804" duration="40000" />
       <workItem from="1729640897255" duration="695000" />
       <workItem from="1731046995790" duration="114000" />
+      <workItem from="1731495493329" duration="714000" />
     </task>
     <servers />
   </component>
