@@ -1,8 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from database import DBhandler
 import os
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'  # 세션 관리를 위한 키 설정
+
+DB = DBhandler()
 
 @app.before_request
 def set_default_session_values():
@@ -108,13 +111,61 @@ def product_list():
         return render_template("productListSeller.html", logged_in=('id' in session), user=session.get('nickname'))
     return render_template("productListBuyer.html", logged_in=('id' in session), user=session.get('nickname'))
 
-@app.route("/register", methods = ['GET', 'POST'])
+# @app.route("/register", methods = ['GET', 'POST'])
+# def register_item():
+#     if request.method == "POST":
+#
+#         if session['role'] == 'buyer':
+#             return redirect(url_for("home"))
+#
+#         name = request.form.get("name")
+#         seller = request.form.get("seller")
+#         addr = request.form.get("addr")
+#         category = request.form.get("category")
+#         status = request.form.get("status")
+#         price = request.form.get("price", type=float)
+#         stock = request.form.get("stock", type=int)
+#
+#         # 이미지 파일 처리
+#         image = request.files['image']
+#         image_filename = f"{len(products) + 1}_{image.filename}"
+#         image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+#
+#         # 상품 딕셔너리에 추가
+#         product_id = len(products) + 1
+#         products[product_id] = {
+#             "name": name,
+#             "description": "상품 설명을 여기에 입력하세요",
+#             "price": price,
+#             "seller_nickname": seller,
+#             "category": category,
+#             "location": addr,
+#             "status": status,
+#             "stock": stock,
+#             "image": image_filename,  # 이미지 파일 이름 저장
+#             "reviews": [],
+#             "rating": 0,
+#         }
+#
+#         image_file = request.files['image']
+#         image_file.save("static/imag/{}.".format(image_file.filename))
+#         data = request.form
+#         DB.insert_item(data['name'], data['price'], data['location'], data['status'], data['rating'], data['stock'], data['reviews'])
+#
+#         # return redirect(url_for("product_detail", product_id=product_id))
+#
+#     return render_template("register.html")
+
+@app.route("/test")
+def testAssignment():
+    return render_template("register.html")
+
+# 상품 등록 시 새로운 product_id 생성 (정수)
+product_id = len(DB.db.child("items").get().val() or {}) + 1
+
+@app.route("/testtest", methods=['GET', 'POST'])
 def register_item():
     if request.method == "POST":
-
-        if session['role'] == 'buyer':
-            return redirect(url_for("home"))
-
         name = request.form.get("name")
         seller = request.form.get("seller")
         addr = request.form.get("addr")
@@ -123,40 +174,43 @@ def register_item():
         price = request.form.get("price", type=float)
         stock = request.form.get("stock", type=int)
 
-        # 이미지 파일 처리
+        # 이미지 처리
         image = request.files['image']
-        image_filename = f"{len(products) + 1}_{image.filename}"
-        image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+        image_filename = f"{name}_{image.filename}"
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+        image.save(image_path)
 
-        # 상품 딕셔너리에 추가
-        product_id = len(products) + 1
-        products[product_id] = {
-            "name": name,
-            "description": "상품 설명을 여기에 입력하세요",
-            "price": price,
-            "seller_nickname": seller,
+        # Firebase 저장 데이터 준비
+        data = {
+            "seller": seller,
+            "addr": addr,
             "category": category,
-            "location": addr,
             "status": status,
+            "price": price,
             "stock": stock,
-            "image": image_filename,  # 이미지 파일 이름 저장
-            "reviews": [],
-            "rating": 0,
         }
 
+        # DB에 저장 (product_id 사용)
+        DB.insert_item(str(product_id), data, image_path)
+
+        # 정수 product_id로 이동
         return redirect(url_for("product_detail", product_id=product_id))
 
     return render_template("register.html")
 
 @app.route("/product/<int:product_id>")
 def product_detail(product_id):
-    product = products.get(product_id)
-    if product:
-        if session['role'] == 'seller':
-            return render_template("productDetailSeller.html", product = product, logged_in=('id' in session), user=session.get('nickname'))
-        else:
-            return render_template("productDetailBuyer.html", product=product, logged_in=('id' in session), user=session.get('nickname'))
-    return "상품을 찾을 수 없습니다.", 404
+    return render_template("homeSeller.html")
+
+# @app.route("/product/<int:product_id>")
+# def product_detail(product_id):
+#     product = products.get(product_id)
+#     if product:
+#         if session['role'] == 'seller':
+#             return render_template("productDetailSeller.html", product = product, logged_in=('id' in session), user=session.get('nickname'))
+#         else:
+#             return render_template("productDetailBuyer.html", product=product, logged_in=('id' in session), user=session.get('nickname'))
+#     return "상품을 찾을 수 없습니다.", 404
 
 @app.route("/login", methods=['Get', 'POST'])
 def login():
