@@ -248,6 +248,8 @@ def login():
                 session['nickname'] = user['nickname']
                 return redirect(url_for("home"))
 
+        # flash message로 띄우고 로그인 화면으로 되돌아가기
+        flash("잘못된 ID or PW")
         return render_template("login.html", error="아이디 또는 비밀번호가 잘못되었습니다.", logged_in=False)
 
     return render_template("login.html", logged_in=False)
