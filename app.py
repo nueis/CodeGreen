@@ -268,8 +268,7 @@ def find_id():
 
 @app.route("/logout")
 def logout():
-    session.pop('id', None)
-    session.pop('nickname', None)
+    session.clear()
     return redirect(url_for("home"))
 
 @app.route('/review')
