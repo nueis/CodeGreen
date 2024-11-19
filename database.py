@@ -1,5 +1,6 @@
 import os
 import pyrebase
+import hashlib 
 import json
 
 class DBhandler:
@@ -43,11 +44,12 @@ class DBhandler:
                     return False
             return True
 
-    def insert_user(self, user_id, email, password, nickname, phone, role):
+    def insert_user(self, id, password, nickname, email, phone, role):
         user_data = {
-            "email": email,
+            "id": id,
             "password": password,
             "nickname": nickname,
+            "email": email,
             "phone": phone,
             "role": role
         }
@@ -57,4 +59,21 @@ class DBhandler:
             return True
         else:
             return False
+        
+    def find_user(self, id, password):
+        users = self.db.child("users").get()
+        target_value=[]
+
+        if not users.val():
+            print("No users found")
+            return None
+
+        for res in users.each():
+            value = res.val()
+            print(f"Checking user: {value}") #data 확인
+
+            if 'id' in value and 'password' in value:
+                if value['id'] == id and value['password'] == password :
+                    return value    # 사용자 정보 반환
+        return None
 

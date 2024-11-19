@@ -42,10 +42,12 @@ def index():
 
 @app.route("/", methods=['GET', 'POST'])
 def home():
-    if session['role'] == 'seller':
-        return render_template("homeSeller.html", logged_in=('id' in session), user=session.get('nickname'))
+    if 'id' in session:
+        if session['role'] == 'seller':
+            return render_template("homeSeller.html", logged_in=True, user=session.get('nickname'))
+        return render_template("homeBuyer.html", logged_in=True, user=session.get('nickname'))
+    return redirect(url_for("login_user"))  # 로그인하지 않은 경우 로그인 화면으로 리다이렉트
 
-    return render_template("homeBuyer.html", logged_in=('id' in session), user=session.get('nickname'))
 
 @app.route("/signUp", methods=['GET', 'POST'])
 def sign_up():
@@ -235,24 +237,29 @@ def product_detail(product_id):
 #             return render_template("productDetailBuyer.html", product=product, logged_in=('id' in session), user=session.get('nickname'))
 #     return "상품을 찾을 수 없습니다.", 404
 
-@app.route("/login", methods=['Get', 'POST'])
-def login():
-    if request.method == "POST":
-        id = request.form.get("user-id")
-        password = request.form.get("password")
+@app.route("/login", methods=['GET', 'POST'])
+def login_user():
+    if request.method == 'POST':
+        # 로그인 처리
+        id = request.form.get('id')
+        password = request.form.get('password')
+        password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
 
-        # 로그인 유효성 검사
-        for user in users.values():
-            if user["id"] == id and user["password"] == password:
-                session['id'] = id
-                session['nickname'] = user['nickname']
-                return redirect(url_for("home"))
+        user = DB.find_user(id, password_hash)
 
-        # flash message로 띄우고 로그인 화면으로 되돌아가기
-        flash("잘못된 ID or PW")
-        return render_template("login.html", error="아이디 또는 비밀번호가 잘못되었습니다.", logged_in=False)
+        if user:
+            session['id'] = id
+            session['nickname'] = user['nickname']  # 이 부분도 DB에서 가져온 사용자 닉네임으로 수정 필요
+            session['role'] = user['role']
+            print(f"Session data: {session}") # 세션 확인용 출력 
+            return redirect(url_for("home"))
+        else:
+            flash("잘못된 ID or PW")
+            return render_template("login.html", error="아이디 또는 비밀번호가 잘못되었습니다.", logged_in=False)
 
+    # GET 요청 시 로그인 화면을 렌더링
     return render_template("login.html", logged_in=False)
+
 
 @app.route("/findId", methods=['GET', 'POST'])
 def find_id():
@@ -261,8 +268,8 @@ def find_id():
 
         # 이메일로 아이디 찾기
         if email in users:
-            user_id = users[email]["id"]
-            return render_template("findId.html", user_id=user_id, found=True, logged_in=False)
+            id = users[email]["id"]
+            return render_template("findId.html", id=id, found=True, logged_in=False)
         else:
             return render_template("findId.html", error="가입되지 않은 회원입니다.", logged_in=False)
 
