@@ -26,16 +26,7 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 products = {}
 users = {}
-# users = {
-#     "testuser@example.com": {
-#         "id": "test",
-#         "password": "test",
-#         "nickname": "test",
-#         "role": "seller",
-#         "email": "test@test.com",
-#         "phone": "1234567890"
-#     }
-# }
+
 
 @app.route("/index")
 def index():
@@ -185,13 +176,17 @@ def browse():
 def register():
     if request.method == "POST":
         # 상품 등록 데이터 수집
-        name = request.form.get("name")
-        price = float(request.form.get("price").replace('₩', '').replace(',', ''))
-        category = request.form.get("category")
-        description_short = request.form.get("description_short")
-        description_long = request.form.get("description_long")
+        name = request.form.get("name")  # 상품 이름
+        price = float(request.form.get("price").replace('₩', '').replace(',', ''))  # 판매 가격
+        location = request.form.get("location")  # 직거래 지역
+        condition = request.form.get("condition")  # 상태
+        stock = int(request.form.get("stock"))  # 재고 수량
+        description_short = request.form.get("description_short")  # 한 줄 소개
+        description_long = request.form.get("description_long")  # 상세 설명
+        category = request.form.get("category")  # 카테고리 선택
+        ewha_green = request.form.get("ewha_green") == "on"  # 초록템 여부 (체크박스)
 
-        # 이미지 처리
+        # 이미지 처리 (대표 사진 1장만)
         image = request.files['file']
         image_filename = f"{name}_{image.filename}"
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
@@ -201,9 +196,13 @@ def register():
         product_data = {
             "name": name,
             "price": price,
-            "category": category,
+            "location": location,
+            "condition": condition,
+            "stock": stock,
             "description_short": description_short,
             "description_long": description_long,
+            "category": category,
+            "ewha_green": ewha_green,
             "img_path": image_filename
         }
 
@@ -214,6 +213,7 @@ def register():
         return render_template("error.html", message="상품 등록에 실패했습니다.")
 
     return render_template("register.html")
+
 
 @app.route("/login", methods=['GET', 'POST'])
 def login_user():

@@ -22,6 +22,16 @@
                     <option value="Beauty">Beauty</option>
                     <option value="Books">Books</option>
                 </select><br><br>
+
+                <label for="location">직거래 지역</label><br>
+                <input type="text" name="location" id="location" required /><br><br>
+
+                <label for="condition">상태</label><br>
+                <select name="condition" id="condition" required>
+                    <option value="New">New</option>
+                    <option value="Used - Like New">Used - Like New</option>
+                    <option value="Used">Used</option>
+                </select><br><br>
             </div>
             <div class="right-column">
                 <label for="file">상품 이미지</label><br>
@@ -32,6 +42,12 @@
 
                 <label for="description_long">상세 설명</label><br>
                 <textarea name="description_long" id="description_long" required></textarea><br><br>
+
+                <label for="stock">재고 수량</label><br>
+                <input type="number" name="stock" id="stock" min="1" required /><br><br>
+
+                <label for="ewha_green">초록템 여부</label><br>
+                <input type="checkbox" name="ewha_green" id="ewha_green" /><br><br>
 
                 <input type="submit" value="등록하기" />
             </div>
