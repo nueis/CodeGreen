@@ -4,6 +4,7 @@ from database import DBhandler
 import os
 import hashlib
 import sys
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'  # 세션 관리를 위한 키 설정
@@ -109,6 +110,7 @@ def product_detail(product_name):
         return render_template(
             "productDetailBuyer.html",
             product=product,
+            name=product['name'],
             logged_in=('id' in session),
             user=session.get('nickname')
         )
@@ -164,7 +166,9 @@ def browse():
             "browseBuyer.html",
             products=products,
             page=page,
-            total_pages=total_pages
+            total_pages=total_pages,
+            logged_in=('id' in session),
+            user=session.get('nickname')
         )
     except Exception as e:
         logging.error(f"Error loading products: {e}")
@@ -258,18 +262,154 @@ def logout():
     session.clear()
     return redirect(url_for("home"))
 
-@app.route('/review')
+@app.route('/review') # 상품별 리뷰 조회
 def reviews():
     reviews_data = [
         {"title": "리뷰 제목", "author": "작성자 닉네임", "date": "작성 날짜"},
         {"title": "리뷰 제목", "author": "작성자 닉네임", "date": "작성 날짜"},
         {"title": "리뷰 제목", "author": "작성자 닉네임", "date": "작성 날짜"},
     ]
-
+    
     if session['role'] == 'seller':
         return render_template("productreviewsSeller.html", reviews=reviews_data, logged_in=('id' in session), user=session.get('nickname'))
 
     return render_template('productreviewsBuyer.html', reviews=reviews_data)
+
+@app.route('/reviews', methods=['GET'])
+def review_list():
+    try:
+        # Fetch and validate reviews
+        reviews = DB.get_reviews()
+        if isinstance(reviews, dict):
+            reviews = list(reviews.values()) 
+        valid_reviews = [review for review in reviews if review is not None]
+
+        # Pagination logic
+        page = request.args.get('page', default=1, type=int)
+        reviews_per_page = 8
+        total_reviews = len(valid_reviews)
+        total_pages = (total_reviews + reviews_per_page - 1) // reviews_per_page
+
+        if page < 1:
+            page = 1
+        elif page > total_pages:
+            page = total_pages
+
+        start_idx = (page - 1) * reviews_per_page
+        end_idx = start_idx + reviews_per_page
+        paginated_reviews = valid_reviews[start_idx:end_idx]
+
+        # Default handling for missing fields
+        for review in paginated_reviews:
+            review["img_path"] = review.get("img_path", "default.jpg")
+
+        return render_template(
+            "reviewList.html",
+            reviews=paginated_reviews,
+            page=page,
+            total_pages=total_pages,
+            logged_in=('id' in session),
+            user=session.get('nickname')
+        )
+    except Exception as e:
+        logging.error(f"Error loading reviews: {e}")
+        return f"Error loading reviews: {str(e)}", 500
+
+@app.route('/myreviews')
+def myreview_list():
+    try:
+        reviews = DB.get_review_by_nickname(session.get('nickname'))
+        if isinstance(reviews, dict):
+            reviews = list(reviews.values()) 
+        valid_reviews = [review for review in reviews if review is not None]
+        
+        # Pagination settings
+        page = request.args.get('page', default=1, type=int)
+        reviews_per_page = 8
+        total_reviews = len(valid_reviews)
+        total_pages = (total_reviews + reviews_per_page - 1) // reviews_per_page
+
+        if page < 1:
+            page = 1
+        elif page > total_pages:
+            page = total_pages
+
+        start_idx = (page - 1) * reviews_per_page
+        end_idx = start_idx + reviews_per_page
+        paginated_reviews = valid_reviews[start_idx:end_idx]
+
+        # Default handling for missing fields
+        for review in paginated_reviews:
+            review["img_path"] = review.get("img_path", "default.jpg")
+
+        return render_template(
+            "myreviewList.html",
+            reviews=paginated_reviews,
+            page=page,
+            total_pages=total_pages,
+            logged_in=('id' in session),
+            user=session.get('nickname')
+        )
+    except Exception as e:
+        logging.error(f"Error loading reviews: {e}")
+        return f"Error loading reviews: {str(e)}", 500
+
+@app.route("/reviews/register/<name>/")
+def register_review_init(name):
+    user_id = session.get('id')
+    user_nickname = session.get('nickname')
+    return render_template("reviewRegister.html", 
+                           product_name=name, 
+                           user_id=user_id, 
+                           user_nickname=user_nickname,
+                           user=user_nickname,
+                           logged_in=('id' in session))
+
+@app.route('/reviews/register', methods = ['GET', 'POST'])
+def register_review():
+    
+    if request.method == "POST":
+        review_title = request.form.get("review_title")
+        review_content = request.form.get("review_content")
+        rating = request.form.get("rating", type=int) 
+        purchase_date = request.form.get("purchase_date")
+        product_name = request.form.get("product_name")
+
+        # 이미지 파일 처리
+        image = request.files['image']
+        image_filename = f"{product_name}_{image.filename}"
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+        image.save(image_path)
+
+
+        # Firebase에 데이터 구성
+        review_id = str(len(DB.get_reviews())+1)
+        new_review = {
+            "user_nickname": session.get('nickname'),
+            "product_name":product_name,
+            "review_title": review_title,
+            "review_content": review_content, 
+            "rating": rating,
+            "img_path": image_filename,      
+            "purchase_date": purchase_date,
+            "review_date": datetime.today().strftime('%Y-%m-%d'),
+            "review_id": review_id
+        }
+
+        # Firebase에 데이터 추가 
+        DB.insert_review(review_id, new_review)
+        return redirect(url_for("review_detail", review_id=review_id))
+    return render_template("register_review.html")
+
+@app.route('/reviews/<int:review_id>')
+def review_detail(review_id):
+    review = DB.get_review_by_id(review_id)
+    if review:
+        return render_template("reviewDetail.html", review=review,
+                               logged_in=('id' in session),
+                               user=session.get('nickname'))
+    return "리뷰를 찾을 수 없습니다.", 404
+
 
 if __name__ == "__main__":
     app.run(debug=True)

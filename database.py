@@ -87,4 +87,48 @@ class DBhandler:
                 if value['id'] == id and value['password'] == password :
                     return value    # 사용자 정보 반환
         return None
+    
+    def insert_review(self, review_id, review_data):
+        try:
+            self.db.child("reviews").child(review_id).set(review_data)
+            print(f"Review {review_id} successfully inserted into Firebase.")
+            return True
+        except Exception as e:
+            print(f"Error inserting item {review_id} into Firebase: {e}")
+            return False
+    
+    def get_reviews(self):
+        try:
+            result = self.db.child("reviews").get()
+            if result.val():
+                print("reviews successfully retrieved from Firebase")
+                return result.val()
+            return {}
+        except Exception as e:
+            print(f"Error retrieving reviews from Firebase: {e}")
+            return {}
+        
+    def get_review_by_id(self, review_id):
+        try:
+            reviews = self.db.child("reviews").get()
+            target_value=""
+            for review in reviews.each():
+                key_value = review.key()
+                if key_value == review_id:
+                    target_value=review.val()
+            return target_value
+        except Exception as e:
+            print(f"Error retrieving review {review_id} from Firebase: {e}")
+            return None
+
+    def get_review_by_nickname(self, nickname):
+        try:
+            reviews = self.db.child("reviews").order_by_child("user_nickname").equal_to(nickname).get()
+            if reviews.val():
+                print("reviews successfully retrieved from Firebase")
+                return reviews.val()
+            return {}
+        except Exception as e:
+            print(f"Error retrieving review {nickname} from Firebase: {e}")
+            return None
 
