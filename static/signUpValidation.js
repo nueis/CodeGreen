@@ -15,21 +15,21 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // Form validation example for showing error messages
+    // Form validation for showing error messages
     document.getElementById('signup-form').addEventListener('submit', function(event) {
         let hasError = false;
 
         // User ID validation
-        const userId = document.getElementById('user-id').value;
+        const userId = document.getElementById('id').value.trim();
         if (userId === "") {
-            document.getElementById('user-id-error').style.display = "block";
+            document.getElementById('id-error').style.display = "block";
             hasError = true;
         } else {
-            document.getElementById('user-id-error').style.display = "none";
+            document.getElementById('id-error').style.display = "none";
         }
 
         // Password validation
-        const password = document.getElementById('password').value;
+        const password = document.getElementById('password').value.trim();
         if (password === "") {
             document.getElementById('password-error').style.display = "block";
             hasError = true;
@@ -38,8 +38,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         // Confirm Password validation
-        const confirmPassword = document.getElementById('confirm-password').value;
-        if (confirmPassword !== password) {
+        const confirmPassword = document.getElementById('confirm-password').value.trim();
+        if (confirmPassword !== password || confirmPassword === "") {
             document.getElementById('confirm-password-error').style.display = "block";
             hasError = true;
         } else {
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         // Nickname validation
-        const nickname = document.getElementById('nickname').value;
+        const nickname = document.getElementById('nickname').value.trim();
         if (nickname === "") {
             document.getElementById('nickname-error').style.display = "block";
             hasError = true;
@@ -55,6 +55,7 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('nickname-error').style.display = "none";
         }
 
+        // Prevent form submission if there are errors
         if (hasError) {
             event.preventDefault();
         }

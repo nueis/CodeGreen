@@ -1,8 +1,21 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+import logging
+from flask import Flask, render_template, request, flash, redirect, url_for, session
+from database import DBhandler
 import os
+import hashlib
+import sys
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'  # 세션 관리를 위한 키 설정
+
+DB = DBhandler()
+
+@app.before_request
+def set_default_session_values():
+    # 세션에 'role' 키가 없을 경우 기본값을 'Seller'로 설정
+    if 'role' not in session:
+        session['role'] = 'Seller'
 
 # 업로드할 파일의 저장 경로 설정
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
@@ -12,140 +25,99 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-# 화면 배치를 테스트 하기 위한 샘플 데이터
 products = {}
-users = {
-    "testuser@example.com": {
-        "id": "testuser",
-        "password": "password",
-        "nickname": "test_nickname",
-        "role": "admin"
-    }
-}
-reviews_data = {}
-
-user_purchases = {
-    "user1": [1,2], # user1 purchased products with ID 1,2 
-}
-
-products[0] = {
-    "product_id": 1,
-    "name": "Product A",
-    "price": 20000,
-    "image_url": "/static/images/bunny.png",
-    "reviews": [],
-    "rating": 0,
-    "seller_nickname": "Ewha",
-    "status":"new",
-    "description":"a new bunny keyring"
-}
-
-products[1] = {
-    "product_id": 2,
-    "name": "Product B",
-    "price": 10000,
-    "image_url": "/static/images/badge.png",
-    "reviews": [],
-    "rating": 0,
-    "seller_nickname": "Choi",
-    "status":"new",
-    "description":"a new badge",
-}
-products[2] = {
-    "product_id": 3,
-    "name": "Product C",
-    "price": 20000,
-    "image_url": "/static/images/bunny.png",
-    "reviews": [],
-    "rating": 0,
-    "seller_nickname": "Ewha",
-    "status":"new",
-    "description":"a new bunny keyring"
-}
-
-products[3] = {
-    "product_id": 4,
-    "name": "Product D",
-    "price": 10000,
-    "image_url": "/static/images/badge.png",
-    "reviews": [],
-    "rating": 0,
-    "seller_nickname": "Choi",
-    "status":"new",
-    "description":"a new badge",
-}
-
-products[4] = {
-    "product_id": 5,
-    "name": "Product name",
-    "price": 10000,
-    "image_url": "/static/images/badge.png",
-    "reviews": [],
-    "rating": 0,
-    "seller_nickname": "seller nickname",
-    "status":"status: new",
-    "description":"description:a new badge",
-}
+users = {}
 
 
 @app.route("/index")
 def index():
-    return render_template("indexBuyer.html", logged_in=('id' in session), user=session.get('nickname'))
+    return render_template("indexSeller.html", logged_in=('id' in session), user=session.get('nickname'))
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def home():
-    if session['role'] == 'seller':
-        return render_template("homeSeller.html", logged_in=('id' in session), user=session.get('nickname'))
-    elif session['role'] == 'buyer':
-        return render_template("homeBuyer.html", logged_in=('id' in session), user=session.get('nickname'))
-    else:
-        return render_template("homeBuyer.html")
+    if 'id' in session:
+        if session['role'] == 'seller':
+            return render_template("homeSeller.html", logged_in=True, user=session.get('nickname'))
+        return render_template("homeBuyer.html", logged_in=True, user=session.get('nickname'))
+    return redirect(url_for("login_user"))  # 로그인하지 않은 경우 로그인 화면으로 리다이렉트
 
-@app.route("/signUp", methods=["POST"])
+
+@app.route("/signUp", methods=['GET', 'POST'])
 def sign_up():
     if request.method == "POST":
         id = request.form.get("id")
         password = request.form.get("password")
+        password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
         nickname = request.form.get("nickname")
         email = request.form.get("email")
         phone = request.form.get("phone")
         role = request.form.get("role")
 
+        if DB.insert_user(id, password_hash, nickname, email, phone, role):
+            return render_template("login.html")
+        else:
+            flash("user id already exists!")
+            return render_template("signUp.html")
+
         # 사용자 정보를 딕셔너리에 저장
-        users[email] = {
-            "id": id,
-            "password": password,
-            "nickname": nickname,
-            "email": email,
-            "phone": phone,
-            "role": role
-        }
+        # users[email] = {
+        #     "id": id,
+        #     "password": password,
+        #     "nickname": nickname,
+        #     "email": email,
+        #     "phone": phone,
+        #     "role": role
+        # }
+        #
+        # if not DB.check_user_exists(email):
+        #     users[email] = {
+        #         "id": id,
+        #         "password": password,
+        #         "nickname": nickname,
+        #         "email": email,
+        #         "phone": phone,
+        #         "role": role
+        #     }
+        #     DB.insert_user(id, email, password, nickname, phone, role)
+        #     session['id'] = id
+        #     return redirect(url_for("home"))
+        # return render_template("signUp.html", error="이메일이 이미 등록되어 있습니다.")
 
         # 회원가입 후 세션에 저장하여 자동 로그인 처리
         session['id'] = id
         session['nickname'] = nickname
+        session['role'] = role
 
-        return redirect(url_for("home"))
+        return redirect(url_for("home", logged_in=('id' in session), user=session.get('nickname')))
 
     return render_template('signUp.html', logged_in=False)
 
-@app.route("/productDetail")
-def view_produceDetail():
-    # 예시로 product 정보를 설정했습니다.
-    product = {
-        'image': 'product_detail_image.png',
-        'seller_nickname': '이화인',
-        'category': '생활 용품',
-        'name': '물병',
-        'price': 15000,
-        'location': '서울특별시',
-        'status': '새상품',
-        'rating': 4.5,
-        'stock': 10,
-        'description': '이 물병은 매우 튼튼하고 가벼워요!',
-        'reviews': ['좋아요!', '배송 빠르고 상품 좋아요.', '생각보다 크네요.']
-    }
-    return render_template("productDetailBuyer.html", product=product)
+# 상품 상세 페이지
+@app.route("/view_detail/<product_name>/")
+def product_detail(product_name):
+    try:
+        logging.debug(f"Requested product name: {product_name}")
+        all_products = DB.get_items()  # 리스트 반환
+        logging.debug(f"All products: {all_products}")
+
+        # 리스트에서 이름으로 상품 검색
+        product = next((item for item in all_products if item and item.get("name") == product_name), None)
+
+        if not product:
+            logging.error(f"Product with name '{product_name}' not found.")
+            return f"Product '{product_name}' not found", 404
+
+        return render_template(
+            "productDetailBuyer.html",
+            product=product,
+            name=product['name'],
+            logged_in=('id' in session),
+            user=session.get('nickname')
+        )
+    except Exception as e:
+        logging.error(f"Error retrieving product details: {e}")
+        return f"An unexpected error occurred: {str(e)}", 500
+
 
 @app.route("/mypage")
 def view_review():
@@ -156,116 +128,130 @@ def view_review():
     else:
         return redirect(url_for("login"))
 
-@app.route("/products")
-def product_list():
-    products_per_page = 4
-    page = request.args.get('page', 1, type=int)
+# 상품 리스트
+@app.route("/browse", methods=["GET"])
+def browse():
+    try:
+        # Firebase에서 데이터 가져오기
+        all_products = DB.get_items()  # 리스트로 반환된 데이터
+        logging.debug(f"DEBUG: All Products from Firebase: {all_products}")
 
-    product_list = list(products.values())
-    start = (page - 1) * products_per_page
-    end = start + products_per_page
-    paginated_products = product_list[start:end]
+        # 리스트 형식 확인 및 유효 데이터 필터링
+        if isinstance(all_products, list):
+            valid_products = [product for product in all_products if product is not None]
+        else:
+            # 예외 처리: 리스트가 아닌 경우 빈 리스트로 설정
+            valid_products = []
 
-    total_pages = (len(product_list) + products_per_page - 1) // products_per_page 
+        # 페이지네이션 처리
+        page = request.args.get('page', default=1, type=int)
+        items_per_page = 4
+        total_products = len(valid_products)
+        total_pages = (total_products + items_per_page - 1) // items_per_page
 
-    return render_template("productList.html", products=paginated_products, page=page, total_pages=total_pages)
+        if page < 1:
+            page = 1
+        elif page > total_pages:
+            page = total_pages
 
-@app.route("/products/register", methods = ["GET", "POST"])
-def register_item():
+        start_idx = (page - 1) * items_per_page
+        end_idx = start_idx + items_per_page
+        products = valid_products[start_idx:end_idx]
+
+        # 각 제품에 대한 기본 필드 설정
+        for product in products:
+            product["img_path"] = product.get("img_path", "default.jpg")
+
+        return render_template(
+            "browseBuyer.html",
+            products=products,
+            page=page,
+            total_pages=total_pages,
+            logged_in=('id' in session),
+            user=session.get('nickname')
+        )
+    except Exception as e:
+        logging.error(f"Error loading products: {e}")
+        return f"Error loading products: {str(e)}", 500
+
+
+# 상품 등록
+@app.route("/register", methods=["GET", "POST"])
+def register():
     if request.method == "POST":
+        # 상품 등록 데이터 수집
+        name = request.form.get("name")  # 상품 이름
+        price = float(request.form.get("price").replace('₩', '').replace(',', ''))  # 판매 가격
+        location = request.form.get("location")  # 직거래 지역
+        condition = request.form.get("condition")  # 상태
+        stock = int(request.form.get("stock"))  # 재고 수량
+        description_short = request.form.get("description_short")  # 한 줄 소개
+        description_long = request.form.get("description_long")  # 상세 설명
+        category = request.form.get("category")  # 카테고리 선택
+        ewha_green = request.form.get("ewha_green") == "on"  # 초록템 여부 (체크박스)
 
-        name = request.form.get("name")
-        seller = request.form.get("seller")
-        addr = request.form.get("addr")
-        category = request.form.get("category")
-        status = request.form.get("status")
-        price = request.form.get("price", type=float)
-        stock = request.form.get("stock", type=int)
+        # 이미지 처리 (대표 사진 1장만)
+        image = request.files['file']
+        image_filename = f"{name}_{image.filename}"
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+        image.save(image_path)
 
-        # 이미지 파일 처리
-        image = request.files['image']
-        image_filename = f"{len(products) + 1}_{image.filename}"
-        image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
-
-        # 상품 딕셔너리에 추가
-        product_id = len(products) + 1
-        products[product_id] = {
+        # Firebase에 저장할 데이터 구성
+        product_data = {
             "name": name,
-            "description": "상품 설명을 여기에 입력하세요",
             "price": price,
-            "seller_nickname": seller,
-            "category": category,
-            "location": addr,
-            "status": status,
+            "location": location,
+            "condition": condition,
             "stock": stock,
-            "image": image_filename,  # 이미지 파일 이름 저장
-            "reviews": [],
-            "rating": 0,
+            "description_short": description_short,
+            "description_long": description_long,
+            "category": category,
+            "ewha_green": ewha_green,
+            "img_path": image_filename
         }
 
-        return redirect(url_for("product_detail", product_id=product_id))
+        # Firebase에 데이터 저장
+        product_id = str(len(DB.get_items()) + 1)
+        if DB.insert_item(product_id, product_data):
+            return redirect(url_for("browse"))
+        return render_template("error.html", message="상품 등록에 실패했습니다.")
 
     return render_template("register.html")
 
-@app.route("/products/<int:product_id>")
-def product_detail(product_id):
-    product = products.get(product_id)
-    if product:
-        return render_template("productDetailBuyer.html", product=product)
-    return "상품을 찾을 수 없습니다.", 404
 
-@app.route('/productTest/<int:product_id>')
-def product_detail_Test(product_id):
-    product = {
-        'name': '토끼 키링',
-        'seller': '이화연',
-        'is_green': True,
-        'category': '이화 굿즈',
-        'price': '5,000원',
-        'short_intro': '토끼 키링',
-        'region': '서울 서대문구 이화여대길',
-        'status': '새 제품 - 최상',
-        'stock': 3,
-        'description': '수제 토끼 키링입니다',
-        'reviews': [
-            {'nickname': 'user1', 'rating': 4, 'content': '귀여워요'},
-            {'nickname': 'user2', 'rating': 5, 'content': '마음에 들어요!'}
-        ]
-    }
+@app.route("/login", methods=['GET', 'POST'])
+def login_user():
+    if request.method == 'POST':
+        # 로그인 처리
+        id = request.form.get('id')
+        password = request.form.get('password')
+        password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
 
-    product = products.get(product_id)
+        user = DB.find_user(id, password_hash)
 
-    if product:
-        role = session.get('role', 'buyer')  # 세션에서 역할 정보를 가져옴. 기본값은 'buyer'
-        return render_template("productDetailBuyer.html", product=product, role=role)
-    return "상품을 찾을 수 없습니다.", 404
+        if user:
+            session['id'] = id
+            session['nickname'] = user['nickname']  # 이 부분도 DB에서 가져온 사용자 닉네임으로 수정 필요
+            session['role'] = user['role']
+            print(f"Session data: {session}") # 세션 확인용 출력 
+            return redirect(url_for("home"))
+        else:
+            flash("잘못된 ID or PW")
+            return render_template("login.html", error="아이디 또는 비밀번호가 잘못되었습니다.", logged_in=False)
 
-
-@app.route("/login", methods=["POST"])
-def login():
-    if request.method == "POST":
-        id = request.form.get("user-id")
-        password = request.form.get("password")
-
-        # 로그인 유효성 검사
-        for user in users.values():
-            if user["id"] == id and user["password"] == password:
-                session['id'] = id
-                session['nickname'] = user['nickname']
-                return redirect(url_for("home"))
-
-        return render_template("login.html", error="아이디 또는 비밀번호가 잘못되었습니다.", logged_in=False)
+    # GET 요청 시 로그인 화면을 렌더링
     return render_template("login.html", logged_in=False)
 
-@app.route("/findId", methods=["POST"])
+
+@app.route("/findId", methods=['GET', 'POST'])
 def find_id():
     if request.method == "POST":
         email = request.form.get("email")
 
         # 이메일로 아이디 찾기
         if email in users:
-            user_id = users[email]["id"]
-            return render_template("findId.html", user_id=user_id, found=True, logged_in=False)
+            id = users[email]["id"]
+            return render_template("findId.html", id=id, found=True, logged_in=False)
         else:
             return render_template("findId.html", error="가입되지 않은 회원입니다.", logged_in=False)
 
@@ -273,234 +259,157 @@ def find_id():
 
 @app.route("/logout")
 def logout():
-    session.pop('id', None)
-    session.pop('nickname', None)
+    session.clear()
     return redirect(url_for("home"))
 
-@app.route('/review')
+@app.route('/review') # 상품별 리뷰 조회
 def reviews():
     reviews_data = [
         {"title": "리뷰 제목", "author": "작성자 닉네임", "date": "작성 날짜"},
         {"title": "리뷰 제목", "author": "작성자 닉네임", "date": "작성 날짜"},
         {"title": "리뷰 제목", "author": "작성자 닉네임", "date": "작성 날짜"},
     ]
-    return render_template('productreviewsBuyer.html', reviews=reviews_data) 
+    
+    if session['role'] == 'seller':
+        return render_template("productreviewsSeller.html", reviews=reviews_data, logged_in=('id' in session), user=session.get('nickname'))
 
-@app.route('/reviews')
+    return render_template('productreviewsBuyer.html', reviews=reviews_data)
+
+@app.route('/reviews', methods=['GET'])
 def review_list():
+    try:
+        # Fetch and validate reviews
+        reviews = DB.get_reviews()
+        if isinstance(reviews, dict):
+            reviews = list(reviews.values()) 
+        valid_reviews = [review for review in reviews if review is not None]
 
-    # Sample data for testing layout
-    reviews = [
-        {"image_url": "../static/images/product.png", "title": "Great Product!", "nickname": "User1", "rating": 4.5},
-        {"image_url": "../static/images/product.png", "title": "Very useful", "nickname": "User2", "rating": 4.0},
-        {"image_url": "../static/images/product.png", "title": "Highly recommend", "nickname": "User3", "rating": 5.0},
-        {"image_url": "../static/images/product.png", "title": "Decent quality", "nickname": "User4", "rating": 3.5},
-        {"image_url": "../static/images/product.png", "title": "Worth the price", "nickname": "User5", "rating": 4.2},
-        {"image_url": "../static/images/product.png", "title": "Love it!", "nickname": "User6", "rating": 4.8},
-        {"image_url": "../static/images/product.png", "title": "Met expectations", "nickname": "User7", "rating": 4.0},
-        {"image_url": "../static/images/product.png", "title": "Good value", "nickname": "User8", "rating": 4.3},
-        {"image_url": "../static/images/product.png", "title": "Love it!", "nickname": "User6", "rating": 4.8},
-        {"image_url": "../static/images/product.png", "title": "Met expectations", "nickname": "User7", "rating": 4.0},
-        {"image_url": "../static/images/product.png", "title": "Good value", "nickname": "User8", "rating": 4.3},
-    ]
-     # Pagination settings
-    reviews_per_page = 8
-    page = request.args.get('page', 1, type=int)
+        # Pagination logic
+        page = request.args.get('page', default=1, type=int)
+        reviews_per_page = 8
+        total_reviews = len(valid_reviews)
+        total_pages = (total_reviews + reviews_per_page - 1) // reviews_per_page
 
-    start = (page - 1) * reviews_per_page
-    end = start + reviews_per_page
+        if page < 1:
+            page = 1
+        elif page > total_pages:
+            page = total_pages
 
-    paginated_reviews = reviews[start:end]
+        start_idx = (page - 1) * reviews_per_page
+        end_idx = start_idx + reviews_per_page
+        paginated_reviews = valid_reviews[start_idx:end_idx]
 
-    total_pages = (len(reviews) + reviews_per_page - 1) // reviews_per_page 
+        # Default handling for missing fields
+        for review in paginated_reviews:
+            review["img_path"] = review.get("img_path", "default.jpg")
 
-    return render_template("reviewList.html", reviews=paginated_reviews, page=page, total_pages=total_pages)
+        return render_template(
+            "reviewList.html",
+            reviews=paginated_reviews,
+            page=page,
+            total_pages=total_pages,
+            logged_in=('id' in session),
+            user=session.get('nickname')
+        )
+    except Exception as e:
+        logging.error(f"Error loading reviews: {e}")
+        return f"Error loading reviews: {str(e)}", 500
 
 @app.route('/myreviews')
 def myreview_list():
-     # Sample data for testing layout
-    reviews = [
-        {"image_url": "../static/images/product.png", "title": "Great Product!", "nickname": "User1", "rating": 4.5},
-        {"image_url": "../static/images/product.png", "title": "Very useful", "nickname": "User1", "rating": 4.0},
-        {"image_url": "../static/images/product.png", "title": "Highly recommend", "nickname": "User1", "rating": 5.0},
-    ]
-     # Pagination settings
-    reviews_per_page = 8
-    page = request.args.get('page', 1, type=int)
+    try:
+        reviews = DB.get_review_by_nickname(session.get('nickname'))
+        if isinstance(reviews, dict):
+            reviews = list(reviews.values()) 
+        valid_reviews = [review for review in reviews if review is not None]
+        
+        # Pagination settings
+        page = request.args.get('page', default=1, type=int)
+        reviews_per_page = 8
+        total_reviews = len(valid_reviews)
+        total_pages = (total_reviews + reviews_per_page - 1) // reviews_per_page
 
-    start = (page - 1) * reviews_per_page
-    end = start + reviews_per_page
+        if page < 1:
+            page = 1
+        elif page > total_pages:
+            page = total_pages
 
-    paginated_reviews = reviews[start:end]
+        start_idx = (page - 1) * reviews_per_page
+        end_idx = start_idx + reviews_per_page
+        paginated_reviews = valid_reviews[start_idx:end_idx]
 
-    total_pages = (len(reviews) + reviews_per_page - 1) // reviews_per_page 
+        # Default handling for missing fields
+        for review in paginated_reviews:
+            review["img_path"] = review.get("img_path", "default.jpg")
 
-    return render_template("myreviewList.html", reviews=paginated_reviews, page=page, total_pages=total_pages)
+        return render_template(
+            "myreviewList.html",
+            reviews=paginated_reviews,
+            page=page,
+            total_pages=total_pages,
+            logged_in=('id' in session),
+            user=session.get('nickname')
+        )
+    except Exception as e:
+        logging.error(f"Error loading reviews: {e}")
+        return f"Error loading reviews: {str(e)}", 500
 
-@app.route('/reviews/register', methods = ['GET', 'POST'])
-def register_review():
-
-    user_id="user1"
-
-    if request.method == "POST":
-
-        user_nickname = request.form.get("user_nickname")
-        product_id = request.form.get("product_id", type=int)
-        review_title = request.form.get("review_title")
-        review_content = request.form.get("review_content")
-        rating = request.form.get("rating", type=int) 
-
-        # 이미지 파일 처리
-        image = request.files['image']
-        image_filename = f"{len(products) + 1}_{image.filename}"
-        image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
-
-        # 리뷰 딕셔너리에 추가
-        review_id = len(reviews) + 1
-        new_review = {
-            "review_id": review_id,
-            "product_id": product_id,
-            "user_id": user_id,
-            "user_nickname": user_nickname ,
-            "review_title": review_title,
-            "review_content": review_content, 
-            "rating": rating,
-            "image": image_filename        
-        }
-        reviews[review_id] = new_review
-
-        # 상품 딕셔너리에 추가 
-        products[product_id]["reviews"].append(review_id)
-
-        product_reviews = [review["rating"] for review in reviews.values() if review["product_id"] == product_id]
-        valid_ratings = [r for r in product_reviews if r is not None]
-        products[product_id]["rating"] = sum(valid_ratings) / len(valid_ratings) if valid_ratings else 0
-
-        return redirect(url_for("review_detail", review_id=review_id))
-
-    # Get list of purchased products for the user
-    purchased_product_ids = user_purchases.get(user_id, [])
-    purchased_products = [products[pid] for pid in purchased_product_ids]
-
-    return render_template("reviewRegister.html", products=purchased_products)
-
-@app.route('/reviews/<int:review_id>')
-def review_detail(review_id):
-    review = reviews[review_id]
-    if review:
-        product = products.get(review["product_id"])
-        if product:
-            return render_template("reviewDetail.html", review=review, product=product)
-        return "제품을 찾을 수 없습니다.", 404
-    return "리뷰를 찾을 수 없습니다.", 404
-
-@app.route('/reviews')
-def review_list():
-
-    # Sample data for testing layout
-    reviews = [
-        {"image_url": "../static/images/product.png", "title": "Great Product!", "nickname": "User1", "rating": 4.5},
-        {"image_url": "../static/images/product.png", "title": "Very useful", "nickname": "User2", "rating": 4.0},
-        {"image_url": "../static/images/product.png", "title": "Highly recommend", "nickname": "User3", "rating": 5.0},
-        {"image_url": "../static/images/product.png", "title": "Decent quality", "nickname": "User4", "rating": 3.5},
-        {"image_url": "../static/images/product.png", "title": "Worth the price", "nickname": "User5", "rating": 4.2},
-        {"image_url": "../static/images/product.png", "title": "Love it!", "nickname": "User6", "rating": 4.8},
-        {"image_url": "../static/images/product.png", "title": "Met expectations", "nickname": "User7", "rating": 4.0},
-        {"image_url": "../static/images/product.png", "title": "Good value", "nickname": "User8", "rating": 4.3},
-        {"image_url": "../static/images/product.png", "title": "Love it!", "nickname": "User6", "rating": 4.8},
-        {"image_url": "../static/images/product.png", "title": "Met expectations", "nickname": "User7", "rating": 4.0},
-        {"image_url": "../static/images/product.png", "title": "Good value", "nickname": "User8", "rating": 4.3},
-    ]
-     # Pagination settings
-    reviews_per_page = 8
-    page = request.args.get('page', 1, type=int)
-
-    start = (page - 1) * reviews_per_page
-    end = start + reviews_per_page
-
-    paginated_reviews = reviews[start:end]
-
-    total_pages = (len(reviews) + reviews_per_page - 1) // reviews_per_page 
-
-    return render_template("reviewList.html", reviews=paginated_reviews, page=page, total_pages=total_pages)
-
-@app.route('/myreviews')
-def myreview_list():
-     # Sample data for testing layout
-    reviews = [
-        {"image_url": "../static/images/product.png", "title": "Great Product!", "nickname": "User1", "rating": 4.5},
-        {"image_url": "../static/images/product.png", "title": "Very useful", "nickname": "User1", "rating": 4.0},
-        {"image_url": "../static/images/product.png", "title": "Highly recommend", "nickname": "User1", "rating": 5.0},
-    ]
-     # Pagination settings
-    reviews_per_page = 8
-    page = request.args.get('page', 1, type=int)
-
-    start = (page - 1) * reviews_per_page
-    end = start + reviews_per_page
-
-    paginated_reviews = reviews[start:end]
-
-    total_pages = (len(reviews) + reviews_per_page - 1) // reviews_per_page 
-
-    return render_template("myreviewList.html", reviews=paginated_reviews, page=page, total_pages=total_pages)
+@app.route("/reviews/register/<name>/")
+def register_review_init(name):
+    user_id = session.get('id')
+    user_nickname = session.get('nickname')
+    return render_template("reviewRegister.html", 
+                           product_name=name, 
+                           user_id=user_id, 
+                           user_nickname=user_nickname,
+                           user=user_nickname,
+                           logged_in=('id' in session))
 
 @app.route('/reviews/register', methods = ['GET', 'POST'])
 def register_review():
-
-    user_id="user1"
-
+    
     if request.method == "POST":
-
-        user_nickname = request.form.get("user_nickname")
-        product_id = request.form.get("product_id", type=int)
         review_title = request.form.get("review_title")
         review_content = request.form.get("review_content")
         rating = request.form.get("rating", type=int) 
+        purchase_date = request.form.get("purchase_date")
+        product_name = request.form.get("product_name")
 
         # 이미지 파일 처리
         image = request.files['image']
-        image_filename = f"{len(products) + 1}_{image.filename}"
-        image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+        image_filename = f"{product_name}_{image.filename}"
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+        image.save(image_path)
 
-        # 리뷰 딕셔너리에 추가
-        review_id = len(reviews_data) + 1
+
+        # Firebase에 데이터 구성
+        review_id = str(len(DB.get_reviews())+1)
         new_review = {
-            "review_id": review_id,
-            "product_id": product_id,
-            "user_id": user_id,
-            "user_nickname": user_nickname ,
+            "user_nickname": session.get('nickname'),
+            "product_name":product_name,
             "review_title": review_title,
             "review_content": review_content, 
             "rating": rating,
-            "image": image_filename        
+            "img_path": image_filename,      
+            "purchase_date": purchase_date,
+            "review_date": datetime.today().strftime('%Y-%m-%d'),
+            "review_id": review_id
         }
-        reviews_data[review_id] = new_review
 
-        # 상품 딕셔너리에 추가 
-        products[product_id]["reviews"].append(review_id)
-
-        product_reviews = [review["rating"] for review in reviews_data.values() if review["product_id"] == product_id]
-        valid_ratings = [r for r in product_reviews if r is not None]
-        products[product_id]["rating"] = sum(valid_ratings) / len(valid_ratings) if valid_ratings else 0
-
+        # Firebase에 데이터 추가 
+        DB.insert_review(review_id, new_review)
         return redirect(url_for("review_detail", review_id=review_id))
-
-    # Get list of purchased products for the user
-    purchased_product_ids = user_purchases.get(user_id, [])
-    purchased_products = [products[pid] for pid in purchased_product_ids]
-
-    return render_template("reviewRegister.html", products=purchased_products)
+    return render_template("register_review.html")
 
 @app.route('/reviews/<int:review_id>')
 def review_detail(review_id):
-    review = reviews_data[review_id]
+    review = DB.get_review_by_id(review_id)
     if review:
-        product = products.get(review["product_id"])
-        if product:
-            return render_template("reviewDetail.html", review=review, product=product)
-        return "제품을 찾을 수 없습니다.", 404
+        return render_template("reviewDetail.html", review=review,
+                               logged_in=('id' in session),
+                               user=session.get('nickname'))
     return "리뷰를 찾을 수 없습니다.", 404
+
 
 if __name__ == "__main__":
     app.run(debug=True)

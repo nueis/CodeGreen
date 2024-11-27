@@ -1,4 +1,4 @@
-{% extends "index.html" %}
+{% extends "indexBuyer.html" %}
 
 {% block head %}
   <link rel="stylesheet" href="{{ url_for('static', filename='reviewListStyle.css') }}">
@@ -16,10 +16,10 @@
                 <img src="{{ review.image_url }}" alt="Review Image">
             </div>
             <div class="review-details">
-                <div class="title">{{ review.title }}</div>
+                <div class="title">{{ review['review_title'] }}</div>
                 <div class="nickname-rating">
-                    <div class="nickname">{{ review.nickname }}</div>
-                    <div class="rating">{{ review.rating }} ★</div>
+                    <div class="nickname">{{review['user_nickname']}}</div>
+                    <div class="rating">{{review['rating']}} ★</div>
                 </div>
             </div>
         </div>

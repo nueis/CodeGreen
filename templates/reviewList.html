@@ -1,4 +1,4 @@
-{% extends "index.html" %}
+{% extends "indexBuyer.html" %}
 
 {% block head %}
   <link rel="stylesheet" href="{{ url_for('static', filename='reviewListStyle.css') }}">
@@ -11,15 +11,17 @@
     <div class="review-grid">
         <!-- Review card structure repeated as needed -->
         {% for review in reviews %}
-        <div class="review-card">
+        <div class="review-card"
+            onclick="location.href='/review_detail/{{ review.id }}/';"
+            style="cursor: pointer;">
             <div class="image-placeholder">
-                <img src="{{ review.image_url }}" alt="Review Image">
+                <img src="{{ url_for('static', filename='uploads/' + review['img_path']) }}" alt="Product Image">
             </div>
             <div class="review-details">
-                <div class="title">{{ review.title }}</div>
+                <div class="title">{{ review['review_title'] }}</div>
                 <div class="nickname-rating">
-                    <div class="nickname">{{ review.nickname }}</div>
-                    <div class="rating">{{ review.rating }} ★</div>
+                    <div class="nickname">{{ review['user_nickname'] }}</div>
+                    <div class="rating">{{ review['rating'] }} ★</div>
                 </div>
             </div>
         </div>

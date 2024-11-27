@@ -13,18 +13,22 @@
       <a href="/">Ewha Market</a>
     </div>
     <ul class="navbar__menu">
-      <li><a href="/productList">Browse</a></li>
+      <li><a href="/browse">Browse</a></li>
       <li><a href="/register">Sell Products</a></li>
       <li><a href="/mypage">My page</a></li>
     </ul>
     <div class="navbar__user">
-      <span class="user__role buyer">seller</span>
-      <span class="user__nickname">seller_nickname</span>
-      <div class="user__avatar"></div>
+      {% if logged_in %}
+        <span class="user__role buyer">seller</span>
+        <span class="user__nickname">{{ user }}</span>
+        <div class="user__avatar"></div>
+        <a href="/logout" class="logout-btn">Logout</a>
+      {% else %}
+        <a href="/login" class="login-btn">Login</a>
+      {% endif %}
     </div>
   </nav>
 
-  <!-- 하위 템플릿이 콘텐츠를 추가할 수 있는 블록 -->
   {% block content %}
   {% endblock %}
 
