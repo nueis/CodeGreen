@@ -12,7 +12,7 @@
         <!-- Review card structure repeated as needed -->
         {% for review in reviews %}
         <div class="review-card"
-            onclick="location.href='/review_detail/{{ review.id }}/';"
+            onclick="location.href='/reviews/{{review.review_id}}';"
             style="cursor: pointer;">
             <div class="image-placeholder">
                 <img src="{{ url_for('static', filename='uploads/' + review['img_path']) }}" alt="Product Image">
