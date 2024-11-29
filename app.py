@@ -8,7 +8,6 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'  # 세션 관리를 위한 키 설정
-
 DB = DBhandler()
 
 @app.before_request
