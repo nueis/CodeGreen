@@ -6,11 +6,11 @@
 
 {% block content %}
 <div class="product-detail">
-    <h1>{{ product['name'] if product['name'] else '상품 이름 없음' }}</h1>
+    <h1>{{ product['name'] if product['name'] else '상품 이름 없음' }}</h1> 
     <div class="product-container">
         <img src="{{ url_for('static', filename='uploads/' + product['img_path']) if product['img_path'] else '' }}" alt="Product Image">
         <div class="product-info">
-            <p><strong>가격:</strong> ₩ {{ product['price'] if product['price'] else '정보 없음' }}</p>
+            <p><strong>가격:</strong> ₩ {{ product['price'] | int if product['price'] else '정보 없음' }}</p>
             <p><strong>카테고리:</strong> {{ product['category'] if product['category'] else '정보 없음' }}</p>
             <p><strong>한 줄 소개:</strong> {{ product['description_short'] if product['description_short'] else '정보 없음' }}</p>
             <p><strong>상세 설명:</strong> {{ product['description_long'] if product['description_long'] else '정보 없음' }}</p>
