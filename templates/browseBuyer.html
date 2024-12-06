@@ -3,8 +3,18 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='browseStyle.css') }}">
 
-<div class="product-list">
+<div class="product-list-header">
     <h1>상품 리스트</h1>
+    <div class="toggle-switch-container">
+        <label class="switch">
+            <input type="checkbox" id="listToggle">
+            <span class="slider round"></span>
+        </label>
+        <label for="listToggle">이화그린 item</label>
+    </div>
+</div>
+
+<div class="product-list">
     {% if products and products|length > 0 %}
     <div class="product-grid">
         {% for product in products %}
@@ -13,9 +23,11 @@
              onclick="location.href=`{{ url_for('product_detail', product_name=product.name) }}`" 
              style="cursor: pointer;">
             <img src="{{ url_for('static', filename='uploads/' + product.img_path) }}" alt="상품 이미지">
-            <h3>{{ product.name }}</h3>
-            <p class="price">₩ {{ product.price }}</p>
-            <p class="description">{{ product.description_short }}</p>
+            <div class="product-info">
+                <h3>{{ product.name }}</h3>
+                <p class="price">₩ {{ product.price | int }}</p>
+                <p class="description">{{ product.description_short }}</p>
+            </div>
         </div>
         {% endfor %}
     </div>
