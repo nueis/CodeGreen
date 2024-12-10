@@ -58,30 +58,6 @@ def sign_up():
             flash("user id already exists!")
             return render_template("signUp.html")
 
-        # 사용자 정보를 딕셔너리에 저장
-        # users[email] = {
-        #     "id": id,
-        #     "password": password,
-        #     "nickname": nickname,
-        #     "email": email,
-        #     "phone": phone,
-        #     "role": role
-        # }
-        #
-        # if not DB.check_user_exists(email):
-        #     users[email] = {
-        #         "id": id,
-        #         "password": password,
-        #         "nickname": nickname,
-        #         "email": email,
-        #         "phone": phone,
-        #         "role": role
-        #     }
-        #     DB.insert_user(id, email, password, nickname, phone, role)
-        #     session['id'] = id
-        #     return redirect(url_for("home"))
-        # return render_template("signUp.html", error="이메일이 이미 등록되어 있습니다.")
-
         # 회원가입 후 세션에 저장하여 자동 로그인 처리
         session['id'] = id
         session['nickname'] = nickname
@@ -127,20 +103,25 @@ def view_review():
     else:
         return redirect(url_for("login"))
 
-# 상품 리스트
 @app.route("/browse", methods=["GET"])
 def browse():
     try:
         # Firebase에서 데이터 가져오기
-        all_products = DB.get_items()  # 리스트로 반환된 데이터
+        all_products = DB.get_items()  # Firebase에서 전체 상품 리스트 반환
         logging.debug(f"DEBUG: All Products from Firebase: {all_products}")
 
-        # 리스트 형식 확인 및 유효 데이터 필터링
+        # 유효한 데이터만 필터링
         if isinstance(all_products, list):
             valid_products = [product for product in all_products if product is not None]
         else:
-            # 예외 처리: 리스트가 아닌 경우 빈 리스트로 설정
             valid_products = []
+
+        # `green_view` 처리 (URL 파라미터 기반)
+        green_view = request.args.get('green_view', default="false").lower() == "true"
+
+        if green_view:
+            # green_view=True인 경우, 이화그린 상품만 필터링
+            valid_products = [product for product in valid_products if product.get("ewha_green", False)]
 
         # 페이지네이션 처리
         page = request.args.get('page', default=1, type=int)
@@ -157,21 +138,25 @@ def browse():
         end_idx = start_idx + items_per_page
         products = valid_products[start_idx:end_idx]
 
-        # 각 제품에 대한 기본 필드 설정
+        # 기본 이미지 경로 설정
         for product in products:
             product["img_path"] = product.get("img_path", "default.jpg")
 
+        # 템플릿 렌더링
         return render_template(
             "browseBuyer.html",
             products=products,
             page=page,
             total_pages=total_pages,
+            green_view=green_view,
             logged_in=('id' in session),
             user=session.get('nickname')
         )
     except Exception as e:
         logging.error(f"Error loading products: {e}")
-        return f"Error loading products: {str(e)}", 500
+        return f"Error loading products: {e}", 500
+
+
 
 
 # 상품 등록

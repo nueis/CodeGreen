@@ -1,13 +1,16 @@
 {% extends "indexBuyer.html" %}
 
-{% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='browseStyle.css') }}">
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='browseStyle.css') }}">
+{% endblock %}
 
+{% block content %}
 <div class="product-list-header">
-    <h1>상품 리스트</h1>
+    <h1>{{ "이화그린 상품 리스트" if green_view else "전체 상품 리스트" }}</h1>
     <div class="toggle-switch-container">
         <label class="switch">
-            <input type="checkbox" id="listToggle">
+            <!-- `green_view` 값에 따라 토글 상태 유지 -->
+            <input type="checkbox" id="listToggle" onchange="redirectToPage()" {{ 'checked' if green_view else '' }}>
             <span class="slider round"></span>
         </label>
         <label for="listToggle">이화그린 item</label>
@@ -18,15 +21,12 @@
     {% if products and products|length > 0 %}
     <div class="product-grid">
         {% for product in products %}
-        <!-- 상품 상세 페이지로 연결 -->
-        <div class="product-card" 
-             onclick="location.href=`{{ url_for('product_detail', product_name=product.name) }}`" 
-             style="cursor: pointer;">
+        <div class="product-card" onclick="location.href='{{ url_for('product_detail', product_name=product.name) }}'">
             <img src="{{ url_for('static', filename='uploads/' + product.img_path) }}" alt="상품 이미지">
             <div class="product-info">
                 <h3>{{ product.name }}</h3>
-                <p class="price">₩ {{ product.price | int }}</p>
-                <p class="description">{{ product.description_short }}</p>
+                <p>₩ {{ product.price | int }}</p>
+                <p>{{ product.description_short }}</p>
             </div>
         </div>
         {% endfor %}
@@ -35,15 +35,28 @@
     <!-- 페이지네이션 -->
     <div class="pagination">
         {% if page > 1 %}
-        <a href="{{ url_for('browse', page=page-1) }}" class="pagination-button">이전</a>
+        <a href="{{ url_for('browse', page=page-1, green_view=green_view) }}" class="pagination-button">이전</a>
         {% endif %}
         <span>페이지 {{ page }} / {{ total_pages }}</span>
         {% if page < total_pages %}
-        <a href="{{ url_for('browse', page=page+1) }}" class="pagination-button">다음</a>
+        <a href="{{ url_for('browse', page=page+1, green_view=green_view) }}" class="pagination-button">다음</a>
         {% endif %}
     </div>
     {% else %}
-    <p>현재 등록된 상품이 없습니다. 상품이 등록되면 여기에 표시됩니다.</p>
+    <p>현재 상품이 없습니다.</p>
     {% endif %}
 </div>
+
+<script>
+    function redirectToPage() {
+        const toggle = document.getElementById('listToggle');
+        if (toggle.checked) {
+            // 이화그린 상품 리스트로 이동
+            window.location.href = "{{ url_for('browse') }}?green_view=True";
+        } else {
+            // 전체 상품 리스트로 이동
+            window.location.href = "{{ url_for('browse') }}?green_view=False";
+        }
+    }
+</script>
 {% endblock content %}
