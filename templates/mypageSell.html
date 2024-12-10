@@ -14,7 +14,7 @@
       <p> 안녕하세요 <span class="nickname">{{ session['nickname']}}</span>
         (<span class="user_id">{{ session['id']}}</span>)님! </p>
       <button class="profile">개인정보 조회 / 수정</button>
-      <a href="register.html" id="register-btn" class="sidebtn">새로운 상품 등록하기</a>
+      <a href="{{ url_for('register') }}" id="register-btn" class="sidebtn">새로운 상품 등록하기</a>
     </aside>
 
     <!-- 메인 콘텐츠 -->
