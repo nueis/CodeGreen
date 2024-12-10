@@ -317,7 +317,9 @@ def review_list():
 def myreview_list():
     try:
         reviews = DB.get_review_by_nickname(session.get('nickname'))
-        if isinstance(reviews, dict):
+        if reviews is None:
+            reviews = []
+        elif isinstance(reviews, dict):
             reviews = list(reviews.values()) 
         valid_reviews = [review for review in reviews if review is not None]
         
