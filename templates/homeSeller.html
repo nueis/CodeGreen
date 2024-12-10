@@ -6,7 +6,7 @@
 
 {% block content %}
 <section class="welcome">
-    <h2>안녕하세요, <span class="nickname">{{session['nickname']}}</span> 님</h2>
+    <h2>안녕하세요, <span class="nickname">{{user}}</span> 님</h2>
     <p><b>제품을 판매할 준비가 되셨나요? 성공적인 하루를 기원합니다!</b></p>
 </section>
 
@@ -35,4 +35,13 @@
         </div>
     </div>
 </section>
+
+<script src="{{ url_for('static', filename='jwt-handler.js') }}"></script>
+<script>
+    // Flask에서 전달된 JWT 토큰을 JavaScript로 전달
+    const token = "{{ token }}";
+    // jwt-handler.js의 함수 호출
+    storeJWT(token);
+</script>
+
 {% endblock content %}
