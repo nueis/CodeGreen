@@ -95,6 +95,7 @@ def product_detail(product_name):
         return f"An unexpected error occurred: {str(e)}", 500
 
 
+# 마이 페이지
 @app.route("/mypage")
 def view_review():
     if session['role'] == 'seller':
@@ -103,6 +104,8 @@ def view_review():
         return render_template("mypageBuy.html")
     else:
         return redirect(url_for("login_user"))
+
+
 
 @app.route("/browse", methods=["GET"])
 def browse():
@@ -157,6 +160,11 @@ def browse():
         logging.error(f"Error loading products: {e}")
         return f"Error loading products: {e}", 500
 
+@app.route('/your_route')
+def your_view_function():
+    items = DB.get_items()  # DB에서 아이템 가져오기
+    print(items)  # 콘솔에 출력
+    return render_template('your_template.html', items=items)
 
 
 
@@ -164,6 +172,9 @@ def browse():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
+        # 현재 로그인 한 사용자 ID 가져오기 
+        seller_id = session.get("id")
+
         # 상품 등록 데이터 수집
         name = request.form.get("name")  # 상품 이름
         price = float(request.form.get("price").replace('₩', '').replace(',', ''))  # 판매 가격
@@ -192,7 +203,8 @@ def register():
             "description_long": description_long,
             "category": category,
             "ewha_green": ewha_green,
-            "img_path": image_filename
+            "img_path": image_filename,
+            "seller_id": seller_id
         }
 
         # Firebase에 데이터 저장

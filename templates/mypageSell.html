@@ -47,45 +47,21 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>001</td>
-              <td>상품 A</td>
-              <td>카테고리 A</td>
-              <td>100</td>
-              <td>50</td>
-            </tr>
-            <tr>
-              <td>001</td>
-              <td>상품 A</td>
-              <td>카테고리 A</td>
-              <td>100</td>
-              <td>50</td>
-            </tr>            <tr>
-              <td>001</td>
-              <td>상품 A</td>
-              <td>카테고리 A</td>
-              <td>100</td>
-              <td>50</td>
-            </tr>            <tr>
-              <td>001</td>
-              <td>상품 A</td>
-              <td>카테고리 A</td>
-              <td>100</td>
-              <td>50</td>
-            </tr>            <tr>
-              <td>001</td>
-              <td>상품 A</td>
-              <td>카테고리 A</td>
-              <td>100</td>
-              <td>50</td>
-            </tr>            <tr>
-              <td>001</td>
-              <td>상품 A</td>
-              <td>카테고리 A</td>
-              <td>100</td>
-              <td>50</td>
-            </tr>            
-            <!-- 추가 상품 데이터 -->
+            <tbody>
+              {% for item in items %}
+                <tr>
+                  <td>{{ loop.index }}</td> <!-- 상품번호 -->
+                  <td>{{ item.name }}</td> <!-- 상품이름 -->
+                  <td>{{ item.category }}</td> <!-- 카테고리 -->
+                  <td>{{ item.stock }}</td> <!-- 재고 -->
+                  <td>0</td> <!-- 주문수량: 아직 없으므로 기본값 -->
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="5">등록된 상품이 없습니다.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
           </tbody>
         </table>
       </section>
