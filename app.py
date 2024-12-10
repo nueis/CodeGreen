@@ -10,6 +10,7 @@ def set_default_session_values():
     if 'role' not in session:
         session['role'] = 'buyer'
 
+
 # 업로드할 파일의 저장 경로 설정
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
