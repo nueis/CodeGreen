@@ -260,6 +260,7 @@ def reviews():
 
     return render_template('productreviewsBuyer.html', reviews=reviews_data)
 
+<<<<<<< Updated upstream
 @app.route('/reviews', methods=['GET'])
 def review_list():
     try:
@@ -395,6 +396,8 @@ def review_detail(review_id):
                                user=session.get('nickname'))
     return "리뷰를 찾을 수 없습니다.", 404
 
+=======
+>>>>>>> Stashed changes
 
 if __name__ == "__main__":
     app.run(debug=True)
