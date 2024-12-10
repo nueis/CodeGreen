@@ -6,7 +6,7 @@
 
 {% block content %}
 <section class="welcome">
-    <h2>안녕하세요, <span class="nickname">seller_nickname</span> 님</h2>
+    <h2>안녕하세요, <span class="nickname">{{session['nickname']}}</span> 님</h2>
     <p><b>제품을 판매할 준비가 되셨나요? 성공적인 하루를 기원합니다!</b></p>
 </section>
 
@@ -15,23 +15,23 @@
     <div class="product-list">
         <div class="product">
             <img src="{{ url_for('static', filename='images/badge.png') }}" alt="badge">
-            <br>강아지 뱃지<br>
+            <br><b>badge</b><br>
         </div>
         <div class="product">
             <img src="{{ url_for('static', filename='images/bunny.png') }}" alt="bunny doll">
-            <br>토끼 인형<br>
+            <br><b>bunny</b><br>
         </div>
         <div class="product">
             <img src="{{ url_for('static', filename='images/keyring.png') }}" alt="keyring">
-            <br>키링<br>
+            <br><b>keyring</b><br>
         </div>
         <div class="product">
             <img src="{{ url_for('static', filename='images/note.png') }}" alt="note">
-            <br>노트<br>
+            <br><b>note</b><br>
         </div>
         <div class="product">
             <img src="{{ url_for('static', filename='images/tok.png') }}" alt="Ewha">
-            <br>그립톡<br>
+            <br><b>tok</b><br>
         </div>
     </div>
 </section>

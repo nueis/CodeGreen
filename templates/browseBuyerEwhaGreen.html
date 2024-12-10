@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='browseStyle.css') }}">
+    <title>이화그린 상품 리스트</title>
+</head>
+<body>
+
+<div class="product-list-header">
+    <h1>이화그린 상품 리스트</h1>
+    <div class="toggle-switch-container">
+        <label class="switch">
+            <!-- green_view 값에 따라 토글 상태 결정 -->
+            <input type="checkbox" id="listToggle" onchange="redirectToPage()" {{ 'checked' if green_view else '' }}>
+            <span class="slider round"></span>
+        </label>
+        <label for="listToggle">이화그린 item</label>
+    </div>
+</div>
+
+<div class="product-list">
+    <!-- 실제 이화그린 상품 출력 -->
+    <p>이화그린 상품 리스트가 여기에 표시됩니다.</p>
+</div>
+
+<script>
+    function redirectToPage() {
+        const toggle = document.getElementById('listToggle');
+        if (toggle.checked) {
+            // 토글이 켜진 경우 (ON) - 이화그린 아이템 페이지 유지
+            window.location.href = "{{ url_for('browse', green_view=True) }}";
+        } else {
+            // 토글이 꺼진 경우 (OFF) - 기본 상품 리스트 페이지로 이동
+            window.location.href = "{{ url_for('browse', green_view=False) }}";
+        }
+    }
+
+    // 페이지 로딩 후 토글 상태 설정
+    window.onload = function() {
+        const toggle = document.getElementById('listToggle');
+        if ({{ 'true' if green_view else 'false' }}) {
+            toggle.checked = true; // 이화그린 페이지일 때 토글 켜짐 유지
+        } else {
+            toggle.checked = false; // 기본 페이지일 때 토글 꺼짐 유지
+        }
+    }
+</script>
+
+</body>
+</html>

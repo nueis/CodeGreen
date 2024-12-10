@@ -1,35 +1,59 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    margin: 0;
-    padding: 0;
-}
-
-.container {
-    display: flex;
-    justify-content: space-between;
+/* 전체 상품 상세 스타일 */
+.product-detail {
+    max-width: 800px; /* 페이지 너비 제한 */
+    margin: 0 auto; /* 중앙 정렬 */
     padding: 20px;
 }
-.left, .right {
-    width: 45%;
-}
-h2 {
-    margin: 0;
-}
-.button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
+
+/* 상품 정보와 이미지를 나란히 배치하는 컨테이너 */
+.product-container {
+    display: flex; /* Flexbox를 사용하여 이미지와 정보를 나란히 배치 */
+    align-items: flex-start;
+    gap: 20px; /* 이미지와 정보 사이의 간격 */
 }
 
-.product-image {
-    width: 300px; 
-    height: auto; 
-    object-fit: contain; 
+/* 상품 이미지 크기 조절 */
+.product-container img {
+    width: 300px; /* 고정된 이미지 너비 */
+    max-height: 400px; /* 이미지 최대 높이 제한 */
+    object-fit: cover; /* 비율 유지하며 자르기 */
+    border-radius: 8px; /* 모서리를 약간 둥글게 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 이미지에 약간의 그림자 */
+}
+
+/* 상품 정보 스타일 */
+.product-info {
+    flex: 1; /* 남은 공간을 차지하게 하기 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* 상품 정보 텍스트 스타일 */
+.product-info p {
+    margin-bottom: 10px; /* 각 정보 간의 간격 */
+    font-size: 1em;
+    color: #555;
+}
+
+/* 행동 버튼 스타일 */
+.actions {
+    margin-top: 20px; /* 상품 정보 아래 여유 공간 */
+    display: flex;
+    gap: 10px; /* 버튼 간의 간격 */
+}
+
+.actions button {
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: #4CAF50; /* 버튼 배경 색상 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.actions button:hover {
+    background-color: #45a049; /* 호버 시 배경 색상 변경 */
 }
