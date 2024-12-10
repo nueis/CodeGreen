@@ -102,7 +102,7 @@ def view_review():
     elif session['role'] == 'buyer':
         return render_template("mypageBuy.html")
     else:
-        return redirect(url_for("login"))
+        return redirect(url_for("login_user"))
 
 @app.route("/browse", methods=["GET"])
 def browse():
