@@ -17,15 +17,41 @@ class DBhandler:
         result = self.db.child("users").child(user_id).get()
         return result.val() is not None  # 존재하면 True, 아니면 False
 
+    # def check_email_exists(self, email):
+    #     """이메일 중복 여부 확인"""
+    #     result = self.db.child("users").order_by_child("email").equal_to(email).get()
+    #     return result.val() is not None
+
     def check_email_exists(self, email):
-        """이메일 중복 여부 확인"""
-        result = self.db.child("users").order_by_child("email").equal_to(email).get()
-        return result.val() is not None
+        """이메일 중복 확인 (전체 데이터를 가져와서 필터링)"""
+        try:
+            users = self.db.child("users").get()  # 전체 데이터를 가져옴
+            if users.each():  # 데이터가 존재하면
+                for user in users.each():
+                    if user.val().get("email") == email:
+                        return True
+            return False  # 이메일이 없으면 False 반환
+        except Exception as e:
+            print(f"Error checking email existence: {e}")
+            return False
+
+    # def check_nickname_exists(self, nickname):
+    #     """닉네임 중복 여부 확인"""
+    #     result = self.db.child("users").order_by_child("nickname").equal_to(nickname).get()
+    #     return result.val() is not None
 
     def check_nickname_exists(self, nickname):
-        """닉네임 중복 여부 확인"""
-        result = self.db.child("users").order_by_child("nickname").equal_to(nickname).get()
-        return result.val() is not None
+        """닉네임 중복 확인 (전체 데이터를 가져와서 필터링)"""
+        try:
+            users = self.db.child("users").get()  # 전체 데이터를 가져옴
+            if users.each():  # 데이터가 존재하면
+                for user in users.each():
+                    if user.val().get("nickname") == nickname:  # 닉네임 일치 여부 확인
+                        return True
+            return False  # 닉네임이 없으면 False 반환
+        except Exception as e:
+            print(f"Error checking nickname existence: {e}")
+            return False
 
     def insert_user(self, user_id, password_hash, nickname, email, phone, role, profile_pic_url):
         """사용자 추가"""

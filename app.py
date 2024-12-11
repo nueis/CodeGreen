@@ -13,6 +13,7 @@ ST = SThandler()
 
 # 세션 관리를 위한 키 설정
 SECRET_KEY = 'super_secret_key'
+app.secret_key = SECRET_KEY
 
 # 업로드할 파일의 저장 경로 설정
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
@@ -21,65 +22,78 @@ UPLOAD_FOLDER = os.path.join('static', 'uploads')
 EXCLUDED_ENDPOINTS = [
     'page_signup', 'service_siginup',
     'page_login', 'service_login',
-    'page_findid',
+    'page_findid', 'service_findid',
     'default'
 ]
 
-# 모든 요청 전에 실행되는 로직
 @app.before_request
-def check_jwt_token():
-    # 정적 파일 및 favicon 요청 예외 처리
-    if request.path.startswith('/static') or request.path == '/favicon.ico':
-        return
+def set_default_session_values():
+    """애플리케이션 시작 시 기본 세션 값 설정"""
+    session['id'] = 'test_user_id'
+    session['nickname'] = 'TestUser'
+    session['role'] = 'buyer'
+    # session['role'] = 'seller'
 
-    """제외 경로 리스트 외 모든 요청에 대해 JWT 검증"""
-    if request.endpoint in EXCLUDED_ENDPOINTS or request.endpoint is None:
-        return
-
-    # Authorization 헤더에서 토큰 추출
-    bearerToken = request.headers.get('Authorization')
-    if bearerToken is None:
-        g.user = None
-        return jsonify({"message": "Missing Authorization Header"}), 401
-
-    # Bearer 토큰 형식 확인
-    if not bearerToken.startswith("Bearer "):
-        return jsonify({"message": "Invalid Token Format"}), 401
-
-    # Bearer 뒷 부분의 토큰만 추출
-    token = bearerToken.split(" ")[1]
-
-    try: # 토큰 디코딩
-        decoded_user = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-
-        # DB에 사용자 존재 여부 확인
-        user = DB.find_user(decoded_user.get("id"))
-        if not user: # 존재하지 않는 사용자
-            return jsonify({"message": "User not found"}), 401
-
-        # g.user에 사용자 정보 저장
-        g.user = {
-            "id": user["id"],  # 사용자 ID
-            "nickname": user["nickname"],  # 사용자 닉네임
-            "role": user["role"]  # 사용자 역할
-        }
-
-    except jwt.ExpiredSignatureError: # 만료된 토큰
-        g.user = None
-        return jsonify({"message": "Expired Token"}), 401
-
-    except jwt.InvalidTokenError: # 유효하지 않은 토큰
-        g.user = None
-        return jsonify({"message": "Invalid Token"}), 401
+# 모든 요청 전에 실행되는 로직
+# @app.before_request
+# def check_jwt_token():
+#     # 정적 파일 및 favicon 요청 예외 처리
+#     if request.path.startswith('/static') or request.path == '/favicon.ico':
+#         return
+#
+#     """제외 경로 리스트 외 모든 요청에 대해 JWT 검증"""
+#     if request.endpoint in EXCLUDED_ENDPOINTS or request.endpoint is None:
+#         return
+#
+#     # Authorization 헤더에서 토큰 추출
+#     bearerToken = request.headers.get('Authorization')
+#     if bearerToken is None:
+#         g.user = None
+#         return jsonify({"message": "Missing Authorization Header"}), 401
+#
+#     # Bearer 토큰 형식 확인
+#     if not bearerToken.startswith("Bearer "):
+#         return jsonify({"message": "Invalid Token Format"}), 401
+#
+#     # Bearer 뒷 부분의 토큰만 추출
+#     token = bearerToken.split(" ")[1]
+#
+#     try: # 토큰 디코딩
+#         decoded_user = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+#
+#         # DB에 사용자 존재 여부 확인
+#         user = DB.find_user(decoded_user.get("id"))
+#         if not user: # 존재하지 않는 사용자
+#             return jsonify({"message": "User not found"}), 401
+#
+#         # g.user에 사용자 정보 저장
+#         g.user = {
+#             "id": user["id"],  # 사용자 ID
+#             "nickname": user["nickname"],  # 사용자 닉네임
+#             "role": user["role"]  # 사용자 역할
+#         }
+#
+#     except jwt.ExpiredSignatureError: # 만료된 토큰
+#         g.user = None
+#         return jsonify({"message": "Expired Token"}), 401
+#
+#     except jwt.InvalidTokenError: # 유효하지 않은 토큰
+#         g.user = None
+#         return jsonify({"message": "Invalid Token"}), 401
 
 @app.route('/')
 def default():
-    return render_template("homeBuyer.html", loggedIn=False)
+    # 세션에 role이 설정되어 있는지 확인
+    role = session.get('role', None)  # 기본값은 None으로 설정
 
-# 아이디 찾기 페이지
-@app.route("/page/findid")
-def page_findid():
-    return render_template("findId.html")
+    if role == 'buyer':
+        return render_template("homeBuyer.html", loggedIn=True, user=session.get('nickname', 'GUEST'))
+    elif role == 'seller':
+        return render_template("homeSeller.html", loggedIn=True, user=session.get('nickname', 'GUEST'))
+    else:
+        # role 값이 없거나 잘못된 경우 기본값으로 GUEST 처리
+        return render_template("homeBuyer.html", loggedIn=False, user="GUEST")
+
 
 # 회원가입 페이지
 @app.route("/page/signup")
@@ -117,7 +131,7 @@ def service_signup():
     password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
 
     # 프로필 사진 처리 (옵션)
-    profile_pic_path = None
+    profile_pic_url = None  # 기본값 설정
     if 'profile-pic' in request.files:
         file = request.files['profile-pic']
         if file.filename != '':  # 파일명이 비어 있지 않으면
@@ -127,8 +141,10 @@ def service_signup():
     success = DB.insert_user(id, password_hash, nickname, email, phone, role, profile_pic_url)
     if success:
         return jsonify({"message": "회원가입이 성공적으로 완료되었습니다."}), 201
+        # return render_template("lcogin.html")
     else:
         return jsonify({"message": "회원가입 중 문제가 발생했습니다. 다시 시도해주세요."}), 500
+        # return render_template("login.html")
 
 # 로그인 페이지
 @app.route("/page/login")
@@ -163,6 +179,25 @@ def service_login():
     else:
         flash("잘못된 ID or PW")
         return render_template("login.html")
+
+# 아이디 찾기 페이지
+@app.route("/page/findid")
+def page_findid():
+    return render_template("findId.html")
+
+# 아이디 찾기 처리
+@app.route("/service/findid", methods=['GET'])
+def service_findid():
+    email = request.form.get("email")
+
+    # 이메일로 아이디 찾기
+    if email in users:
+        id = users[email]["id"]
+        return render_template("findId.html", id=id, found=True, logged_in=False)
+    else:
+        return render_template("findId.html", error="가입되지 않은 회원입니다.", logged_in=False)
+
+    return render_template("findId.html", logged_in=False)
 
 # 업로드 폴더 생성
 if not os.path.exists(UPLOAD_FOLDER):
@@ -318,20 +353,6 @@ def register():
         return render_template("error.html", message="상품 등록에 실패했습니다.")
 
     return render_template("register.html")
-
-@app.route("/findId", methods=['GET', 'POST'])
-def find_id():
-    if request.method == "POST":
-        email = request.form.get("email")
-
-        # 이메일로 아이디 찾기
-        if email in users:
-            id = users[email]["id"]
-            return render_template("findId.html", id=id, found=True, logged_in=False)
-        else:
-            return render_template("findId.html", error="가입되지 않은 회원입니다.", logged_in=False)
-
-    return render_template("findId.html", logged_in=False)
 
 @app.route("/logout")
 def logout():

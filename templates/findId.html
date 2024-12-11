@@ -9,7 +9,7 @@
   <main>
     <section class="signup-form">
       <h2>등록한 계정 정보를 알려주세요!</h2>
-      <form action="#" method="post">
+      <form action="{{ url_for('service_findid') }}" method="get">
         <div class="input-group">
           <label for="email">이메일</label>
           <input type="text" id="email" name="email" placeholder="이메일을 입력해주세요.">

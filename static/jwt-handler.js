@@ -1,7 +1,7 @@
-// JWT 토큰을 로컬 스토리지에 저장
-function storeJWT(token) {
-    localStorage.setItem("auth_token", token);
-}
+// // JWT 토큰을 로컬 스토리지에 저장
+// function storeJWT(token) {
+//     localStorage.setItem("auth_token", token);
+// }
 
 // API 호출 시 JWT 토큰 사용 예시
 function fetchWithJWT(url) {
