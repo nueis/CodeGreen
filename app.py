@@ -94,6 +94,42 @@ def product_detail(product_name):
         logging.error(f"Error retrieving product details: {e}")
         return f"An unexpected error occurred: {str(e)}", 500
 
+# 구매 (주문 생성)
+@app.route("/create_order", methods=["POST"])
+def create_order():
+    if 'id' not in session:
+        return redirect(url_for('login_user'))  # 로그인이 안 되어있다면 로그인 페이지로 이동
+    
+    # 세션에서 구매자 ID와 이메일 가져오기
+    buyer_id = session['id']
+    buyer_email = session.get('email', 'unknown@example.com')  # 이메일이 없으면 기본값
+    
+    # 요청에서 상품 ID 가져오기
+    product_id = request.form.get('product_id')
+    
+    # Firebase에서 상품 정보 가져오기
+    product = DB.get_item_by_id('product_id')  # Firebase의 상품 데이터 조회
+    if not product:
+        return "상품 정보를 찾을 수 없습니다.", 404
+    
+    # 주문 데이터 구성
+    order_data = {
+        "buyer_id": buyer_id,
+        "buyer_email": buyer_email,
+        "seller_id": product.get("seller_id"),
+        "product_name": product.get("name"),
+        "category": product.get("category"),
+        "location": product.get("location"),  # 직거래 주소
+        "order_date": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    }
+
+    # Firebase에 데이터 저장
+    order_id = f"order_{datetime.now().timestamp()}"  # 유니크한 주문 ID 생성
+    if DB.insert_order(order_id, order_data):
+        return redirect(url_for("mypage"))
+    else:
+        return "주문 생성에 실패했습니다.", 500
+
 
 # 마이 페이지
 @app.route("/mypage")

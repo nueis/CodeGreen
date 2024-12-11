@@ -131,4 +131,12 @@ class DBhandler:
         except Exception as e:
             print(f"Error retrieving review {nickname} from Firebase: {e}")
             return None
-
+    
+    def insert_order(self, order_id, order_data):
+        try:
+        # Firebase Database의 'orders' 디렉토리에 데이터를 저장
+            self.db.child("orders").child(order_id).set(order_data)
+            return True
+        except Exception as e:
+            print(f"Failed to insert order {order_id}: {e}")
+            return False   

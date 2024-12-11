@@ -17,9 +17,23 @@
         </div>
     </div>
     <div class="actions">
-        <button>구매하기</button>
+        <form action="/create_order" method="POST" onsubmit="return confirmOrder();">
+            <input type="hidden" name="product_id" value="{{ product['id'] }}">
+            <button type="submit">구매하기</button>
+        </form>        
         <button onclick="location.href='/browse'">돌아가기</button>
         <button onclick="location.href='/reviews/register/{{name}}'">리뷰 작성</button>
     </div>
 </div>
+<script>
+    function confirmOrder() {
+        // 사용자에게 확인 메시지 표시
+        const confirmed = confirm("주문을 확정하시겠습니까?");
+        
+        // '확인'을 누르면 true를 반환하여 폼 제출 진행
+        // '취소'를 누르면 false를 반환하여 폼 제출 중단
+        return confirmed;
+    }
+</script>
+
 {% endblock content %}
