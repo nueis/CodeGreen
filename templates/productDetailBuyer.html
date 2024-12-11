@@ -9,14 +9,18 @@
     <div class="actions">
         <button onclick="location.href='/browse'">돌아가기</button>
     </div>
-    <h1>{{ product['name'] if product['name'] else '상품 이름 없음' }}</h1> 
+    <h1>{{ product.get('name', '상품 이름 없음') }}</h1> 
     <div class="product-container">
-        <img src="{{ url_for('static', filename='uploads/' + product['img_path']) if product['img_path'] else '' }}" alt="Product Image">
+        <img src="{{ url_for('static', filename='uploads/' + product.get('img_path', 'default.jpg')) }}" alt="상품 이미지">
         <div class="product-info">
-            <p><strong>가격:</strong> ₩ {{ product['price'] | int if product['price'] else '정보 없음' }}</p>
-            <p><strong>카테고리:</strong> {{ product['category'] if product['category'] else '정보 없음' }}</p>
-            <p><strong>한 줄 소개:</strong> {{ product['description_short'] if product['description_short'] else '정보 없음' }}</p>
-            <p><strong>상세 설명:</strong> {{ product['description_long'] if product['description_long'] else '정보 없음' }}</p>
+            <p><strong>판매자:</strong> {{ user if user else '정보 없음' }}</p>
+            <p><strong>가격:</strong> ₩ {{ product.get('price', '정보 없음') | int }}</p>
+            <p><strong>카테고리:</strong> {{ product.get('category', '정보 없음') }}</p>
+            <p><strong>직거래 지역:</strong> {{ product.get('location', '정보 없음') }}</p>
+            <p><strong>상품 상태:</strong> {{ product.get('condition', '정보 없음') }}</p>
+            <p><strong>재고 수량:</strong> {{ product.get('stock', '정보 없음') }}</p>
+            <p><strong>한 줄 소개:</strong> {{ product.get('description_short', '정보 없음') }}</p>
+            <p><strong>상세 설명:</strong> {{ product.get('description_long', '정보 없음') }}</p>
         </div>
     </div>
     <div class="actions">

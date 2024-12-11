@@ -46,53 +46,9 @@
     box-sizing: border-box;
 }
 
-.radio-group {
-    display: flex;
-    align-items: center; /* 수직 정렬 */
-    gap: 15px; /* 버튼 간의 간격 조정 */
-}
-
-.radio-button {
-    display: inline-block;
-    padding: 5px 15px;
-    background-color: #f0f0f0; /* 기본 배경색 */
-    border: 1px solid #ccc; /* 테두리 색 */
-    border-radius: 20px; /* 모서리 둥글게 */
-    cursor: pointer; /* 커서 모양 변경 */
-    text-align: center; /* 텍스트 중앙 정렬 */
-    transition: background-color 0.3s, color 0.3s; /* 부드러운 전환 효과 */
-}
-
-/* 라디오 버튼 내부의 텍스트 두께 설정 */
-.radio-button span {
-    font-weight: normal; 
-}
-
-.radio-button input[type="radio"] {
-    display: none; /* 기본 라디오 버튼 숨기기 */
-}
-
-.radio-button:hover {
-    background-color: #e0e0e0; /* 호버 시 배경색 변경 */
-}
-
-/* 선택된 버튼 스타일 */
-.radio-button input[type="radio"]:checked + .radio-button {
-    background-color: #00462A; /* 선택된 버튼 배경색 */
-    color: white; /* 선택된 버튼 텍스트 색 */
-    border: 1px solid #0056b3; /* 선택된 버튼 테두리 색 */
-}
-
-/* 눌린 상태 스타일 */
-.radio-button input[type="radio"]:checked + label {
-    background-color: #00462A; /* 선택된 버튼 배경색 */
-    color: white; /* 선택된 버튼 텍스트 색 */
-}
-
-
 /* 수정된 부분: submit 버튼 스타일 */
 form input[type="submit"] {
-    background-color: #007bff;
+    background-color: green;
     color: white;
     border: none;
     padding: 10px;
@@ -105,5 +61,48 @@ form input[type="submit"] {
 
 
 form input[type="submit"]:hover {
-    background-color: #0056b3;
+    background-color: #36b300cb;
+}
+
+#preview {
+    width: 150px; /* 정사각형의 가로 크기 */
+    height: 150px; /* 정사각형의 세로 크기 */
+    object-fit: cover; /* 이미지가 정사각형을 벗어나지 않도록 잘림 */
+    border-radius: 10px; /* 모서리를 둥글게 하려면 숫자 조정 */
+}
+
+
+/* 기본 체크박스 스타일 숨김 */
+input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 50px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+    transition: 0.2s;
+    position: relative;
+}
+
+/* 체크박스에 체크되었을 때 스타일 */
+input[type="checkbox"]:checked {
+    background-color: green;
+    border-color: green;
+    position: relative;
+}
+
+/* 체크박스 안에 'ewhagreen' 글씨 추가 */
+input[type="checkbox"]:checked::after {
+    content: 'ewhagreen';
+    color: white;
+    font-size: 8px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    text-align: center;
 }
