@@ -483,5 +483,6 @@ def unlike(name):
     my_heart = DB.update_heart(session['id'], 'N', name)
     return jsonify({'msg': '좋아요 취소!'})
 
+
 if __name__ == "__main__":
     app.run(debug=True)
