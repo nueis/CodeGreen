@@ -6,18 +6,20 @@
 
 {% block content %}
 <div class="form-page">
-    <h1>상품 등록</h1>
+    <h1>상품 등록하기</h1>
     <form action="/register" method="post" enctype="multipart/form-data">
         <div class="form-container">
             <div class="left-column">
-                <label for="name">상품 이름</label><br>
-                <input type="text" name="name" id="name" required /><br><br>
+                <label for="file">상품 이미지</label><br>
+                <img id="preview" src="{{ url_for('static', filename='images/product_detail_image.png') }}" alt="상품 이미지" /><br>
+                <input type="file" name="file" id="file" required onchange="previewImage(event)" /><br><br>
 
-                <label for="price">가격</label><br>
-                <input type="text" name="price" id="price" required /><br><br>
-                
-                <label for="category">카테고리</label><br>
+                <label for="ewha_green">초록템 여부</label><br>
+                <input type="checkbox" name="ewha_green" id="ewha_green" /><br><br>
+
+                <label for="category">카테고리 선택</label><br>
                 <select name="category" id="category" required>
+                    <option value="" disabled selected>선택</option>
                     <option value="Digital Devices">디지털기기</option>
                     <option value="Books">도서</option>
                     <option value="Beauty">뷰티/미용</option>
@@ -26,35 +28,47 @@
                     <option value="Accessories">잡화</option>
                 </select><br><br>
 
-                <label for="location">직거래 지역</label><br>
-                <input type="text" name="location" id="location" required /><br><br>
+                <label for="name">상품 이름</label><br>
+                <input type="text" name="name" id="name" placeholder="상품 이름" required /><br><br>
 
-                <label for="condition">상태</label><br>
+                <label for="price">판매 가격</label><br>
+                <input type="text" name="price" id="price" placeholder="₩ 가격을 입력해주세요" required /><br><br>
+            </div>
+
+            <div class="right-column">
+                <label for="location">직거래 지역</label><br>
+                <input type="text" name="location" id="location" placeholder="위치 추가" required /><br><br>
+
+                <label for="condition">상품 상태</label><br>
                 <select name="condition" id="condition" required>
+                    <option value="" disabled selected>상태 선택</option>
                     <option value="New">New</option>
                     <option value="Used - Like New">Used - Like New</option>
                     <option value="Used">Used</option>
                 </select><br><br>
-            </div>
-            <div class="right-column">
-                <label for="file">상품 이미지</label><br>
-                <input type="file" name="file" id="file" required /><br><br>
-
-                <label for="description_short">간단 설명</label><br>
-                <input type="text" name="description_short" id="description_short" required /><br><br>
-
-                <label for="description_long">상세 설명</label><br>
-                <textarea name="description_long" id="description_long" required></textarea><br><br>
 
                 <label for="stock">재고 수량</label><br>
-                <input type="number" name="stock" id="stock" min="1" required /><br><br>
+                <input type="number" name="stock" id="stock" placeholder="수량을 입력해주세요" min="1" required /><br><br>
 
-                <label for="ewha_green">초록템 여부</label><br>
-                <input type="checkbox" name="ewha_green" id="ewha_green" /><br><br>
+                <label for="description_short">한 줄 소개</label><br>
+                <input type="text" name="description_short" id="description_short" placeholder="상품을 간단히 소개해주세요" required /><br><br>
 
+                <label for="description_long">상세 설명</label><br>
+                <textarea name="description_long" id="description_long" placeholder="상품에 대해 자세히 작성해주세요" required></textarea><br><br>
+            
                 <input type="submit" value="등록하기" />
             </div>
-        </div>
-    </form>
-</div>
+        </form>
+    </div>
+
+<script>
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function () {
+            const preview = document.getElementById('preview');
+            preview.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
 {% endblock content %}
