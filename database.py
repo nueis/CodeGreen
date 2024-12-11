@@ -131,7 +131,7 @@ class DBhandler:
         except Exception as e:
             print(f"Error retrieving review {nickname} from Firebase: {e}")
             return None
-        
+                
     # home 화면 recent sales 부분 추가
     def get_recent_items(self, count=5):
         try:
@@ -153,3 +153,25 @@ class DBhandler:
         except Exception as e:
             print(f"Error retrieving recent items from Firebase: {e}")
             return []
+    def get_heart_byname(self, uid, name):
+        hearts = self.db.child("heart").child(uid).get()
+        target_value = ""
+
+        if hearts.val() is None:
+            return target_value
+
+        for res in hearts.each():
+            key_value = res.key()
+            if key_value == name:
+                target_value = res.val()  # 해당 상품의 좋아요 상태
+                return target_value
+
+        return target_value
+
+    def update_heart(self, user_id, isHeart, item):
+        heart_info = {
+            "interested": isHeart  # 좋아요 상태
+        }
+
+        self.db.child("heart").child(user_id).child(item).set(heart_info)
+        return True
