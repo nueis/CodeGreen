@@ -10,6 +10,8 @@ app = Flask(__name__)
 app.secret_key = 'super_secret_key'  # 세션 관리를 위한 키 설정
 DB = DBhandler()
 
+print("Pyrebase is successfully imported!")
+
 @app.before_request
 def set_default_session_values():
     # 세션에 'role' 키가 없을 경우 기본값을 'Seller'로 설정
@@ -108,7 +110,7 @@ def create_order():
     product_id = request.form.get('product_id')
     
     # Firebase에서 상품 정보 가져오기
-    product = DB.get_item_by_id('product_id')  # Firebase의 상품 데이터 조회
+    product = DB.get_item_by_id(product_id)  # Firebase의 상품 데이터 조회
     if not product:
         return "상품 정보를 찾을 수 없습니다.", 404
     
@@ -135,12 +137,53 @@ def create_order():
 @app.route("/mypage")
 def view_review():
     if session['role'] == 'seller':
-        return render_template("mypageSell.html")
+        return redirect(url_for('mypage_seller'))
     elif session['role'] == 'buyer':
-        return render_template("mypageBuy.html")
+        return redirect(url_for('mypage_buyer'))
     else:
         return redirect(url_for("login_user"))
 
+@app.route("/mypage/buyer")
+def mypage_buyer():
+    if 'id' not in session or session.get('role') != 'buyer':
+        return redirect(url_for('login_user'))
+
+    buyer_id = session['id']
+    orders = DB.get_orders_by_user(buyer_id, role='buyer')  # 구매자 주문 데이터 가져오기
+    total_orders = len(orders)  # 총 주문 수 계산
+
+    reviews = DB.get_reviews_by_buyer_id(buyer_id)
+    total_reviews = len(reviews)
+
+    return render_template(
+        "mypageBuy.html",
+        orders=orders,
+        total_orders=total_orders,
+        total_reviews=total_reviews,
+        logged_in=True,
+        user=session.get('nickname')
+    )
+
+@app.route("/mypage/seller")
+def mypage_seller():
+    if 'id' not in session or session.get('role') != 'seller':
+        return redirect(url_for('login_user'))
+
+    seller_id = session['id']
+    orders = DB.get_orders_by_user(seller_id, role="seller")  # 판매자 주문 데이터 가져오기
+    total_orders = len(orders)  # 총 주문 수 계산
+
+    reviews = DB.get_reviews_by_seller_id(seller_id)
+    total_reviews = len(reviews)
+
+    return render_template(
+        "mypageSell.html",
+        orders=orders,
+        total_orders=total_orders,
+        total_reviews=total_reviews,
+        logged_in=True,
+        user=session.get('nickname')
+    )
 
 
 @app.route("/browse", methods=["GET"])
@@ -410,6 +453,7 @@ def register_review():
         rating = request.form.get("rating", type=int) 
         purchase_date = request.form.get("purchase_date")
         product_name = request.form.get("product_name")
+        seller_id = request.form.get("seller_id")
 
         # 이미지 파일 처리
         image = request.files['image']
@@ -422,6 +466,7 @@ def register_review():
         review_id = str(len(DB.get_reviews())+1)
         new_review = {
             "user_nickname": session.get('nickname'),
+            "buyer_id": session.get('id'),
             "product_name":product_name,
             "review_title": review_title,
             "review_content": review_content, 
@@ -429,13 +474,20 @@ def register_review():
             "img_path": image_filename,      
             "purchase_date": purchase_date,
             "review_date": datetime.today().strftime('%Y-%m-%d'),
-            "review_id": review_id
+            "review_id": review_id,
+            "seller_id" : seller_id
         }
+
+
+        buyer_id = session.get('id')
+        reviews = DB.get_reviews_by_buyer_id(buyer_id)  # buyer_id로 리뷰 조회
+        review_count = len(reviews)  # 리뷰 개수 세기
 
         # Firebase에 데이터 추가 
         DB.insert_review(review_id, new_review)
         return redirect(url_for("review_detail", review_id=review_id))
     return render_template("register_review.html")
+
 
 @app.route('/reviews/<int:review_id>')
 def review_detail(review_id):
@@ -445,6 +497,22 @@ def review_detail(review_id):
                                logged_in=('id' in session),
                                user=session.get('nickname'))
     return "리뷰를 찾을 수 없습니다.", 404
+
+def get_reviews_by_user(self, user_id, role):
+    try:
+        reviews = self.db.child("reviews").get().val()
+        if not reviews:
+            return []
+
+        # 구매자(buyer) 또는 판매자(seller) 기준으로 리뷰 필터링
+        if role == "buyer":
+            return [review for review in reviews.values() if review.get("buyer_id") == user_id]
+        elif role == "seller":
+            return [review for review in reviews.values() if review.get("seller_id") == user_id]
+    except Exception as e:
+        logging.error(f"Failed to fetch reviews for {role} {user_id}: {e}")
+        return []
+
 
 
 

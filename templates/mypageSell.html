@@ -24,45 +24,50 @@
       <section class="myinfo">
         <div class="info-item">
           <h3>등록된 리뷰 수</h3>
-          <h2>7</h2>
+          <h2>{{ total_reviews }}</h2>
         </div>
 
         <div class="info-item">
           <h3>누적 주문 수</h3>
-          <h2>13</h2>
+          <h2>{{ total_orders }}</h2>
         </div>
       </section>
 
       <!-- 두 번째 섹션: 상품 리스트 -->
       <section class="sales-list">
-        <h2 style="margin-left: 20px;"> <span class="nickname">{{ session['nickname']}}</span> (<span class="user_id">{{ session['id']}}</span>) 님의 상품 리스트</h2>
+        <h2 style="margin-left: 20px;"> <span class="nickname">{{ session['nickname']}}</span> (<span class="user_id">{{ session['id']}}</span>) 님의 주문 리스트</h2>
         <table>
           <thead>
             <tr>
-              <th>상품번호</th>
+              <th>주문번호</th>
               <th>상품이름</th>
+              <th>구매자ID</th>
               <th>카테고리</th>
-              <th>재고</th>
-              <th>주문수량</th>
+              <th>주문일자</th>
             </tr>
           </thead>
+          
           <tbody>
-            <tbody>
-              {% for item in items %}
-                <tr>
-                  <td>{{ loop.index }}</td> <!-- 상품번호 -->
-                  <td>{{ item.name }}</td> <!-- 상품이름 -->
-                  <td>{{ item.category }}</td> <!-- 카테고리 -->
-                  <td>{{ item.stock }}</td> <!-- 재고 -->
-                  <td>0</td> <!-- 주문수량: 아직 없으므로 기본값 -->
-                </tr>
-              {% else %}
-                <tr>
-                  <td colspan="5">등록된 상품이 없습니다.</td>
-                </tr>
+            {% if orders and orders|length > 0 %}
+              {% for order in orders %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td><a href="{{ url_for('product_detail', product_name=order.product_name) }}">
+                    {{ order.product_name }}
+                  </a>
+                </td>
+                <td>{{ order.buyer_id }}</td>
+                <td>{{ order.category }}</td>
+                <td>{{ order.order_date }}</td>
+              </tr>
               {% endfor %}
-            </tbody>
+            {% else %}
+              <tr>
+                  <td colspan="5" style="text-align: center;">현재 판매 내역이 없습니다.</td>
+              </tr>
+            {% endif %}
           </tbody>
+          
         </table>
       </section>
     </main>

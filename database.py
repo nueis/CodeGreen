@@ -110,13 +110,11 @@ class DBhandler:
         
     def get_review_by_id(self, review_id):
         try:
-            reviews = self.db.child("reviews").get()
-            target_value=""
-            for review in reviews.each():
-                key_value = review.key()
-                if key_value == review_id:
-                    target_value=review.val()
-            return target_value
+            review = self.db.child("reviews").child(review_id).get()
+            if review.val():
+                print(f"Review {review_id} successfully retrieved from Firebase.")
+                return review.val()
+            return None
         except Exception as e:
             print(f"Error retrieving review {review_id} from Firebase: {e}")
             return None
@@ -139,4 +137,40 @@ class DBhandler:
             return True
         except Exception as e:
             print(f"Failed to insert order {order_id}: {e}")
-            return False   
+            return False  
+         
+    def get_orders_by_user(self, user_id, role):
+        try:
+            orders = self.db.child("orders").get().val()  # Firebase에서 모든 주문 데이터 가져오기
+            if not orders:
+                return []
+
+             # 구매자(buyer) 또는 판매자(seller) 기준으로 주문 필터링
+            if role == "buyer":
+                return [order for order in orders.values() if order.get("buyer_id") == user_id]
+            elif role == "seller":
+                return [order for order in orders.values() if order.get("seller_id") == user_id]
+        except Exception as e:
+            print(f"Failed to fetch orders for {role} {user_id}: {e}")
+            return []
+    
+    def get_reviews_by_buyer_id(self, buyer_id):
+        try:
+            reviews = self.db.child("reviews").get().val()
+            if not reviews:
+                return []
+            return [review for review in reviews.values() if review.get("buyer_id") == buyer_id]
+        except Exception as e:
+            print(f"Error retrieving reviews for buyer {buyer_id}: {e}")
+            return []
+
+    def get_reviews_by_seller_id(self, seller_id):
+        try:
+            reviews = self.db.child("reviews").get().val()
+            if not reviews:
+                return []
+            return [review for review in reviews.values() if review.get("seller_id") == seller_id]
+        except Exception as e:
+            print(f"Error retrieving reviews for seller {seller_id}: {e}")
+            return []
+

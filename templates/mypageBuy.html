@@ -25,16 +25,16 @@
       <section class="myinfo">
         <div class="info-item">
           <h3>누적 주문 수</h3>
-          <h1>14</h1>
+          <h1>{{ total_orders }}</h1>
         </div>
 
         <div class="info-item">
           <h3>작성한 리뷰 수</h3>
-          <h1>9</h1>
+          <h1>{{ total_reviews }}</h1>
         </div>
       </section>
 
-      <!-- 두 번째 섹션: 상품 리스트 -->
+      <!-- 두 번째 섹션: 주문 리스트 -->
       <section class="sales-list">
         <h2 style="margin-left: 20px;"> <span class="nickname">{{ session['nickname']}}</span> (<span class="user_id">{{ session['id']}}</span>) 님의 주문 리스트 </h2>
         <table>
@@ -45,51 +45,31 @@
               <th>카테고리</th>
               <th>주문수량</th>
               <th>주문일시</th>
-              <th>상태</th>
+              <th>리뷰</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>001</td>
-              <td>상품 A</td>
-              <td>카테고리 A</td>
-              <td>2</td>
-              <td>2024-10-23</td>
-              <td>배송중</td>
-            </tr>
-            <tr>
-                <td>001</td>
-                <td>상품 A</td>
-                <td>카테고리 A</td>
-                <td>2</td>
-                <td>2024-10-23</td>
-                <td>배송중</td>
+            {% if orders and orders|length > 0 %}
+              {% for order in orders %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td><a href="{{ url_for('product_detail', product_name=order.product_name) }}">
+                  {{ order.product_name }}
+              </a></td>
+                <td>{{ order.category }}</td>
+                <td>{{ order.order_date }}</td>
+                <td>
+                  <form action="/reviews/register/{{ order.product_name }}" method="GET" style="margin: 0;">
+                      <button type="submit">리뷰 쓰기</button>
+                  </form>
+              </td>
               </tr>
-            <tr>
-                <td>001</td>
-                <td>상품 A</td>
-                <td>카테고리 A</td>
-                <td>2</td>
-                <td>2024-10-23</td>
-                <td>배송중</td>
-            </tr>
-            <tr>
-                <td>001</td>
-                <td>상품 A</td>
-                <td>카테고리 A</td>
-                <td>2</td>
-                <td>2024-10-23</td>
-                <td>배송중</td>
-            </tr>
-            <tr>
-                <td>001</td>
-                <td>상품 A</td>
-                <td>카테고리 A</td>
-                <td>2</td>
-                <td>2024-10-23</td>
-                <td>배송중</td>
-            </tr>
-            <!-- 추가 상품 데이터 -->
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="6" style="text-align: center;">현재 구매 내역이 없습니다.</td>
+              </tr>
+            {% endif %}
           </tbody>
         </table>
       </section>
