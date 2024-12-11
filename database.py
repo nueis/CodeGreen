@@ -131,4 +131,25 @@ class DBhandler:
         except Exception as e:
             print(f"Error retrieving review {nickname} from Firebase: {e}")
             return None
+        
+    # home 화면 recent sales 부분 추가
+    def get_recent_items(self, count=5):
+        try:
+            items = self.db.child("items").get()
 
+            if not items.val():
+                return []
+
+            # 데이터를 리스트로 변환 및 None 값 필터링
+            items_list = [
+                {**item.val(), 'id': int(item.key())}
+                for item in items.each()
+                if item and item.val() and isinstance(item.val(), dict)
+            ]
+
+            # ID 기준 내림차순 정렬
+            sorted_items = sorted(items_list, key=lambda x: x['id'], reverse=True)
+            return sorted_items[:count]
+        except Exception as e:
+            print(f"Error retrieving recent items from Firebase: {e}")
+            return []
