@@ -36,9 +36,11 @@ def index():
 @app.route("/", methods=['GET', 'POST'])
 def home():
     if 'id' in session:
+        recent_sales = DB.get_recent_items(5)
+
         if session['role'] == 'seller':
-            return render_template("homeSeller.html", logged_in=True, user=session.get('nickname'))
-        return render_template("homeBuyer.html", logged_in=True, user=session.get('nickname'))
+            return render_template("homeSeller.html", logged_in=True, user=session.get('nickname'), recent_sales=recent_sales)
+        return render_template("homeBuyer.html", logged_in=True, user=session.get('nickname'), recent_sales=recent_sales)
     return redirect(url_for("login_user"))  # 로그인하지 않은 경우 로그인 화면으로 리다이렉트
 
 

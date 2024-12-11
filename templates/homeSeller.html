@@ -13,26 +13,13 @@
 <section class="recent-sales">
     <h3>Recent Sales</h3>
     <div class="product-list">
+        {% for product in recent_sales %}
         <div class="product">
-            <img src="{{ url_for('static', filename='images/badge.png') }}" alt="badge">
-            <br><b>badge</b><br>
+            <img src="{{ url_for('static', filename='uploads/' ~ product['img_path']) }}" alt="{{ product['name'] }}">
+            <br><b>{{ product['name'] }}</b><br>
+            <p>₩{{ product['price'] }}</p>
         </div>
-        <div class="product">
-            <img src="{{ url_for('static', filename='images/bunny.png') }}" alt="bunny doll">
-            <br><b>bunny</b><br>
-        </div>
-        <div class="product">
-            <img src="{{ url_for('static', filename='images/keyring.png') }}" alt="keyring">
-            <br><b>keyring</b><br>
-        </div>
-        <div class="product">
-            <img src="{{ url_for('static', filename='images/note.png') }}" alt="note">
-            <br><b>note</b><br>
-        </div>
-        <div class="product">
-            <img src="{{ url_for('static', filename='images/tok.png') }}" alt="Ewha">
-            <br><b>tok</b><br>
-        </div>
+        {% endfor %}
     </div>
 </section>
 {% endblock content %}
