@@ -83,13 +83,33 @@ def product_detail(product_name):
             logging.error(f"Product with name '{product_name}' not found.")
             return f"Product '{product_name}' not found", 404
 
-        return render_template(
-            "productDetailBuyer.html",
-            product=product,
-            name=product['name'],
-            logged_in=('id' in session),
-            user=session.get('nickname')
-        )
+        # 템플릿 렌더링: 역할에 따라 다른 템플릿 선택
+        if 'id' in session:
+            if session['role'] == 'seller':
+                return render_template(
+                    "productDetailSeller.html",  # 판매자용 템플릿
+                    product=product,
+                    name=product['name'],
+                    logged_in=True,
+                    user=session.get('nickname')
+                )
+            elif session['role'] == 'buyer':
+                return render_template(
+                    "productDetailBuyer.html",  # 구매자용 템플릿
+                    product=product,
+                    name=product['name'],
+                    logged_in=True,
+                    user=session.get('nickname')
+                )
+        else:
+            # 비로그인 사용자는 기본적으로 구매자용 템플릿 사용
+            return render_template(
+                "productDetailBuyer.html",
+                product=product,
+                name=product['name'],
+                logged_in=False,
+                user=None
+            )
     except Exception as e:
         logging.error(f"Error retrieving product details: {e}")
         return f"An unexpected error occurred: {str(e)}", 500
@@ -104,7 +124,6 @@ def view_review():
         return render_template("mypageBuy.html")
     else:
         return redirect(url_for("login_user"))
-
 
 
 @app.route("/browse", methods=["GET"])
@@ -146,19 +165,43 @@ def browse():
         for product in products:
             product["img_path"] = product.get("img_path", "default.jpg")
 
-        # 템플릿 렌더링
-        return render_template(
-            "browseBuyer.html",
-            products=products,
-            page=page,
-            total_pages=total_pages,
-            green_view=green_view,
-            logged_in=('id' in session),
-            user=session.get('nickname')
-        )
+        # 템플릿 렌더링: 역할에 따라 다른 템플릿 선택
+        if 'id' in session:
+            if session['role'] == 'seller':
+                return render_template(
+                    "browseSeller.html",
+                    products=products,
+                    page=page,
+                    total_pages=total_pages,
+                    green_view=green_view,
+                    logged_in=True,
+                    user=session.get('nickname')
+                )
+            elif session['role'] == 'buyer':
+                return render_template(
+                    "browseBuyer.html",
+                    products=products,
+                    page=page,
+                    total_pages=total_pages,
+                    green_view=green_view,
+                    logged_in=True,
+                    user=session.get('nickname')
+                )
+        else:
+            # 비로그인 사용자 기본 동작
+            return render_template(
+                "browseBuyer.html",
+                products=products,
+                page=page,
+                total_pages=total_pages,
+                green_view=green_view,
+                logged_in=False,
+                user=None
+            )
     except Exception as e:
         logging.error(f"Error loading products: {e}")
         return f"Error loading products: {e}", 500
+
 
 @app.route('/your_route')
 def your_view_function():
@@ -168,11 +211,15 @@ def your_view_function():
 
 
 
-# 상품 등록
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    # 로그인 여부 확인
+    if 'id' not in session:
+        flash("상품 등록은 로그인한 사용자만 이용할 수 있습니다.")
+        return redirect(url_for("login_user"))
+    
     if request.method == "POST":
-        # 현재 로그인 한 사용자 ID 가져오기 
+        # 현재 로그인 한 사용자 ID 가져오기
         seller_id = session.get("id")
 
         # 상품 등록 데이터 수집
@@ -213,7 +260,13 @@ def register():
             return redirect(url_for("browse"))
         return render_template("error.html", message="상품 등록에 실패했습니다.")
 
-    return render_template("register.html")
+    # GET 요청 시, 로그인 정보와 함께 렌더링
+    return render_template(
+        "register.html", 
+        logged_in=('id' in session), 
+        user=session.get('nickname')
+    )
+
 
 
 @app.route("/login", methods=['GET', 'POST'])
