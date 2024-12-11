@@ -6,6 +6,9 @@
 
 {% block content %}
 <div class="product-detail">
+    <div class="actions">
+        <button onclick="location.href='/browse'">돌아가기</button>
+    </div>
     <h1>{{ product['name'] if product['name'] else '상품 이름 없음' }}</h1> 
     <div class="product-container">
         <img src="{{ url_for('static', filename='uploads/' + product['img_path']) if product['img_path'] else '' }}" alt="Product Image">
@@ -17,8 +20,10 @@
         </div>
     </div>
     <div class="actions">
-        <button>구매하기</button>
-        <button onclick="location.href='/browse'">돌아가기</button>
+        <button onclick="location.href='/reviews/register/{{name}}'">리뷰 작성</button>
+        <button class="like-button">
+            <i class="fa fa-heart" id="heart"></i> 좋아요
+        </button>
     </div>
 </div>
 {% endblock content %}
