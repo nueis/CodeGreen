@@ -755,13 +755,20 @@ def register_review():
 @app.route('/service/reviews/<int:review_id>')
 def review_detail(review_id):
     review = DB.get_review_by_id(review_id)
+    if hasattr(g, 'user') and g.user:
+        nickname = g.user['nickname']
+    else:
+        nickname = "GUEST"
+
     if review:
-        return render_template("reviewDetail.html", review=review,
-                               logged_in=('id' in session),
-                               user=session.get('nickname'))
+        return render_template(
+            "reviewDetail.html",
+            review=review,
+            logged_in=('id' in session),
+            user=nickname
+        )
     return "리뷰를 찾을 수 없습니다.", 404
 
-## develop/se----------------------------------------------------------------------------------------------
 def get_reviews_by_user(self, user_id, role):
     try:
         reviews = self.db.child("reviews").get().val()
