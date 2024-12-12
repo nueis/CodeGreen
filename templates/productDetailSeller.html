@@ -11,7 +11,8 @@
     </div>
     <h1>{{ product.get('name', '상품 이름 없음') }}</h1> 
     <div class="product-container">
-        <img src="{{ url_for('static', filename='uploads/' + product.get('img_path', 'default.jpg')) }}" alt="상품 이미지">
+{#        <img src="{{ url_for('static', filename='uploads/' + product.get('img_path', 'default.jpg')) }}" alt="상품 이미지">#}
+        <img src="{{product.img_url}}" alt="상품 이미지">
         <div class="product-info">
             <p><strong>판매자:</strong> {{ user if user else '정보 없음' }}</p>
             <p><strong>가격:</strong> ₩ {{ product.get('price', '정보 없음') | int }}</p>
@@ -25,6 +26,7 @@
     </div>
     <div class="actions">
         <button onclick="location.href='/reviews/register/{{name}}'">리뷰 작성</button>
+{#        <button onclick="location.href='/reviews/register/{{ product_id }}'">리뷰 작성</button>#}
         <button class="like-button">
             <i class="fa fa-heart" id="heart"></i> 좋아요
         </button>

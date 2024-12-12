@@ -142,7 +142,25 @@ class DBhandler:
         except Exception as e:
             print(f"Error retrieving item {product_id} from Firebase: {e}")
             return None
-    
+
+    def get_item_by_name(self, product_name):
+        try:
+            items = self.db.child("items").get()  # 모든 데이터를 가져옵니다.
+            if items.each():
+                for item in items.each():
+                    if item is None:  # item이 None인지 체크
+                        continue
+
+                    data = item.val()  # 현재 아이템의 데이터
+                    if data and data.get("name") == product_name:  # name 필드가 일치하면 반환
+                        print(f"Item with name '{product_name}' successfully retrieved.")
+                        return data
+            print(f"No item found with name '{product_name}'.")
+            return None
+        except Exception as e:
+            print(f"Error retrieving item by name '{product_name}': {e}")
+            return None
+
     def insert_review(self, review_id, review_data):
         try:
             self.db.child("reviews").child(review_id).set(review_data)

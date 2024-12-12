@@ -15,7 +15,7 @@
             </div>
             <div class="product-image">
 {#                <img src="{{ url_for('static', filename='uploads/' + review['img_path']) }}" alt="Product Image">#}
-                <img src="{{ review['img_path'] }}" alt="Product Image">
+                <img src="{{ review['img_url'] }}" alt="Product Image">
             </div>
             <p class="purchase-date">구매 날짜: {{review['purchase_date']}}</p>
         </div>

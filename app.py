@@ -1,4 +1,6 @@
 import logging
+from itertools import product
+
 from flask import Flask, render_template, request, flash, redirect, url_for, session, jsonify, g, make_response
 from database import DBhandler
 from storage import SThandler
@@ -389,15 +391,15 @@ def product_detail(product_name):
                 return render_template(
                     "productDetailSeller.html",  # 판매자용 템플릿
                     product=product,
-                    name=product['name'],
+                    name=product_name,
                     logged_in=True,
                     user=session.get('nickname')
                 )
             elif session['role'] == 'buyer':
                 return render_template(
                     "productDetailBuyer.html",  # 구매자용 템플릿
-                    product=product,
-                    name=product['name'],
+                    product=product_name,
+                    name=product_name,
                     logged_in=True,
                     user=session.get('nickname')
                 )
@@ -406,7 +408,7 @@ def product_detail(product_name):
             return render_template(
                 "productDetailBuyer.html",
                 product=product,
-                name=product['name'],
+                name=product_name,
                 logged_in=False,
                 user=None
             )
@@ -625,33 +627,38 @@ def register():
             seller_id = session.get("id")
 
             # 상품 등록 데이터 수집
-            name = request.form.get("name")
-            price = float(request.form.get("price").replace('₩', '').replace(',', ''))
-            category = request.form.get("category")
-            description_short = request.form.get("description_short")
-            description_long = request.form.get("description_long")
-            ewha_green = request.form.get("ewha_green")
+            # 상품 등록 데이터 수집
+            name = request.form.get("name")  # 상품 이름
+            price = float(request.form.get("price").replace('₩', '').replace(',', ''))  # 판매 가격
+            location = request.form.get("location")  # 직거래 지역
+            condition = request.form.get("condition")  # 상태
+            stock = int(request.form.get("stock"))  # 재고 수량
+            description_short = request.form.get("description_short")  # 한 줄 소개
+            description_long = request.form.get("description_long")  # 상세 설명
+            category = request.form.get("category")  # 카테고리 선택
+            ewha_green = request.form.get("ewha_green") == "on"  # 초록템 여부 (체크박스)
 
             # 이미지 처리
             image = request.files['file']
             if image:
-                st_handler = SThandler()  # SThandler 객체 생성
-                image_url = st_handler.upload_file_to_firebase(image)  # Firebase에 이미지 업로드
+                # st_handler = SThandler()  # SThandler 객체 생성
+                image_url = ST.upload_file_to_firebase(image)  # Firebase에 이미지 업로드
             else:
                 image_url = None  # 이미지가 없는 경우
 
-            # Firebase Database에 저장할 데이터 구성
+            # Firebase에 저장할 데이터 구성
             product_data = {
                 "name": name,
                 "price": price,
-                "category": category,
+                "location": location,
+                "condition": condition,
+                "stock": stock,
                 "description_short": description_short,
                 "description_long": description_long,
-                "img_url": image_url,
-                "seller_id": seller_id,
-                "ewha_green": ewha_green
+                "category": category,
+                "ewha_green": ewha_green,
+                "img_url": image_url
             }
-
             # Firebase Database에 데이터 저장
             product_id = str(len(DB.get_items()) + 1)
             if DB.insert_item(product_id, product_data):
@@ -737,8 +744,8 @@ def service_reviews():
 
         # Default handling for missing image URLs
         for review in paginated_reviews:
-            if "img_path" not in review or not review["img_path"]:
-                review["img_path"] = "https://storage.googleapis.com/버킷네임수정필요/default.jpg"
+            if "img_url" not in review or not review["img_url"]:
+                review["img_url"] = "https://storage.googleapis.com/버킷네임수정필요/default.jpg"
 
         if 'id' in session and 'role' in session and 'nickname' in session:
             if session['role'] == 'seller':
@@ -830,18 +837,21 @@ def myreview_list():
         logging.error(f"Error loading reviews: {e}")
         return f"Error loading reviews: {str(e)}", 500
 
-@app.route("/service/reviews/register/<name>/")
+@app.route("/reviews/register/<name>/")
 def register_review_init(name):
     user_id = session.get('id')
     user_nickname = session.get('nickname')
-    return render_template("reviewRegister.html", 
-                           product_name=name, 
-                           user_id=user_id, 
+    product = DB.get_item_by_name(name)
+    print(name)
+    print("product", product)
+    return render_template("reviewRegister.html",
+                           product=product,
+                           user_id=user_id,
                            user_nickname=user_nickname,
                            user=user_nickname,
                            logged_in=('id' in session))
 
-@app.route('/service/reviews/register', methods = ['GET', 'POST'])
+@app.route('/reviews/register', methods = ['GET', 'POST'])
 def register_review():
     
     if request.method == "POST":
@@ -852,11 +862,17 @@ def register_review():
         product_name = request.form.get("product_name")
         seller_id = request.form.get("seller_id")
 
-        # 이미지 파일 처리
+        # # 이미지 파일 처리
+        # image = request.files['image']
+        # image_filename = f"{product_name}_{image.filename}"
+        # image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+        # image.save(image_path)
         image = request.files['image']
-        image_filename = f"{product_name}_{image.filename}"
-        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
-        image.save(image_path)
+        if image:
+            # st_handler = SThandler()  # SThandler 객체 생성
+            image_url = ST.upload_file_to_firebase(image)  # Firebase에 이미지 업로드
+        else:
+            image_url = None  # 이미지가 없는 경우
 
 
         # Firebase에 데이터 구성
@@ -868,7 +884,7 @@ def register_review():
             "review_title": review_title,
             "review_content": review_content, 
             "rating": rating,
-            "img_path": image_filename,      
+            "img_url": image_url,
             "purchase_date": purchase_date,
             "review_date": datetime.today().strftime('%Y-%m-%d'),
             "review_id": review_id,
@@ -883,7 +899,8 @@ def register_review():
         # Firebase에 데이터 추가 
         DB.insert_review(review_id, new_review)
         return redirect(url_for("review_detail", review_id=review_id))
-    return render_template("register_review.html")
+    # return render_template("register_review.html")
+    return render_template("reviewRegister.html")
 
 
 @app.route('/service/reviews/<int:review_id>')
@@ -901,6 +918,7 @@ def review_detail(review_id):
     #     nickname = "GUEST"
 
     if review:
+        print("review", review)
         return render_template(
             "reviewDetail.html",
             review=review,

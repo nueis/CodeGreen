@@ -10,7 +10,7 @@
         <div class="form-grid">
             <div class="image-section">
                 <div class="product-image-placeholder">
-                    <img id="product-image" src="../static/images/product_detail_image.png" alt="Preview Image">
+                    <img id="product-image" src="{{product.img_url}}" alt="Preview Image">
                     <div class="file-input-wrapper">
                         <input type="file" id="image" name="image" accept="image/*" required>
                     </div>
@@ -48,7 +48,7 @@
 
                 <div class="form-group">
                     <label>상품 선택</label>
-                    <input type="text" name="product_name" readonly class="form-control" value={{product_name}}>
+                    <input type="text" name="product_name" readonly class="form-control" value={{product.name}}>
                 <!--
                     <select id="product-select" name="product_id" required class="form-control">
                         <option value="">리뷰 작성할 상품을 선택하세요</option>

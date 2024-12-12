@@ -24,8 +24,9 @@
       {% if logged_in %}
         <span class="user__role buyer">Buyer</span>
         <span class="user__nickname">{{session["nickname"]}}</span>
-        <div class="user__avatar"></div>
+        <div class="user__avatar">
           <img src="{{ session['profile_pic'] }}" alt="User Avatar">
+          </div>
         <a href="/logout" class="logout-btn">Logout</a>
       {% else %}
         <a href="/page/login" class="login-btn">Login</a>
