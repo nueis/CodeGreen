@@ -35,11 +35,11 @@
     <!-- 페이지네이션 -->
     <div class="pagination">
         {% if page > 1 %}
-        <a href="{{ url_for('browse', page=page-1, green_view=green_view) }}" class="pagination-button">이전</a>
+        <a href="{{ url_for('service_browse', page=page-1, green_view=green_view) }}" class="pagination-button">이전</a>
         {% endif %}
         <span>페이지 {{ page }} / {{ total_pages }}</span>
         {% if page < total_pages %}
-        <a href="{{ url_for('browse', page=page+1, green_view=green_view) }}" class="pagination-button">다음</a>
+        <a href="{{ url_for('service_browse', page=page+1, green_view=green_view) }}" class="pagination-button">다음</a>
         {% endif %}
     </div>
     {% else %}
@@ -52,10 +52,10 @@
         const toggle = document.getElementById('listToggle');
         if (toggle.checked) {
             // 이화그린 상품 리스트로 이동
-            window.location.href = "{{ url_for('browse') }}?green_view=True";
+            window.location.href = "{{ url_for('service_browse') }}?green_view=True";
         } else {
             // 전체 상품 리스트로 이동
-            window.location.href = "{{ url_for('browse') }}?green_view=False";
+            window.location.href = "{{ url_for('service_browse') }}?green_view=False";
         }
     }
 </script>

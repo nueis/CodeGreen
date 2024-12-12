@@ -24,6 +24,7 @@ EXCLUDED_ENDPOINTS = [
     'page_signup', 'service_siginup',
     'page_login', 'service_login',
     'page_findid', 'service_findid',
+    'service_browse',
     'default'
 ]
 
@@ -268,16 +269,6 @@ users = {}
 #     }
 # }
 
-@app.route("/", methods=['GET', 'POST'])
-def home():
-    if 'id' in session:
-        recent_sales = DB.get_recent_items(5)
-
-        if session['role'] == 'seller':
-            return render_template("homeSeller.html", logged_in=True, user=session.get('nickname'), recent_sales=recent_sales)
-        return render_template("homeBuyer.html", logged_in=True, user=session.get('nickname'), recent_sales=recent_sales)
-    return redirect(url_for("login_user"))  # 로그인하지 않은 경우 로그인 화면으로 리다이렉트
-
 # 상품 상세 페이지
 @app.route("/view_detail/<product_name>/")
 def product_detail(product_name):
@@ -420,8 +411,8 @@ def mypage_seller():
         user=session.get('nickname')
     )
 
-@app.route("/browse", methods=["GET"])
-def browse():
+@app.route("/service/browse", methods=["GET"])
+def service_browse():
     try:
         # Firebase에서 데이터 가져오기
         all_products = DB.get_items()  # Firebase에서 전체 상품 리스트 반환
@@ -455,13 +446,14 @@ def browse():
         end_idx = start_idx + items_per_page
         products = valid_products[start_idx:end_idx]
 
-        # 기본 이미지 경로 설정
-        for product in products:
-            product["img_path"] = product.get("img_path", "default.jpg")
+        ### 이미지 처리 방식 변경에 따른 주석 처리(firebase storage 사용)
+        # # 기본 이미지 경로 설정
+        # for product in products:
+        #     product["img_path"] = product.get("img_path", "default.jpg")
 
         # 템플릿 렌더링: 역할에 따라 다른 템플릿 선택
-        if 'id' in session:
-            if session['role'] == 'seller':
+        if hasattr(g, 'user') and g.user:
+            if g.user['role'] == 'seller':
                 return render_template(
                     "browseSeller.html",
                     products=products,
@@ -469,9 +461,9 @@ def browse():
                     total_pages=total_pages,
                     green_view=green_view,
                     logged_in=True,
-                    user=session.get('nickname')
+                    user=g.user['nickname']
                 )
-            elif session['role'] == 'buyer':
+            else:
                 return render_template(
                     "browseBuyer.html",
                     products=products,
@@ -479,10 +471,9 @@ def browse():
                     total_pages=total_pages,
                     green_view=green_view,
                     logged_in=True,
-                    user=session.get('nickname')
+                    user=g.user['nickname']
                 )
         else:
-            # 비로그인 사용자 기본 동작
             return render_template(
                 "browseBuyer.html",
                 products=products,
@@ -490,8 +481,9 @@ def browse():
                 total_pages=total_pages,
                 green_view=green_view,
                 logged_in=False,
-                user=None
+                user="GUEST"
             )
+
     except Exception as e:
         logging.error(f"Error loading products: {e}")
         return f"Error loading products: {e}", 500
@@ -549,7 +541,7 @@ def register():
         # Firebase에 데이터 저장
         product_id = str(len(DB.get_items()) + 1)
         if DB.insert_item(product_id, product_data):
-            return redirect(url_for("browse"))
+            return redirect(url_for('service_browse'))
         return render_template("error.html", message="상품 등록에 실패했습니다.")
 
     # GET 요청 시, 로그인 정보와 함께 렌더링

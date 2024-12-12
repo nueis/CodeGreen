@@ -7,7 +7,7 @@
 {% block content %}
 <div class="product-detail">
     <div class="actions">
-        <button onclick="location.href='/browse'">돌아가기</button>
+        <button onclick="location.href='/service/browse'">돌아가기</button>
     </div>
     <h1>{{ product.get('name', '상품 이름 없음') }}</h1> 
     <div class="product-container">
@@ -28,7 +28,7 @@
 
             <button>구매하기</button>
              
-        <button onclick="location.href='/browse'">돌아가기</button>
+        <button onclick="location.href='/service/browse'">돌아가기</button>
 
 
         <button onclick="location.href='/reviews/register/{{name}}'">리뷰 작성</button>

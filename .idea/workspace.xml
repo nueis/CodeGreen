@@ -7,9 +7,14 @@
     <list default="true" id="7947c1bf-824a-482d-a724-04e16a1c827d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/jwt-handler.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/jwt-handler.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/homeBuyer.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/homeBuyer.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/homeSeller.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/homeSeller.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/browseBuyer.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/browseBuyer.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/browseBuyerEwhaGreen.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/browseBuyerEwhaGreen.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/browseSeller.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/browseSeller.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/browseSellerEwhaGreen.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/browseSellerEwhaGreen.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/indexBuyer.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/indexBuyer.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/indexSeller.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/indexSeller.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/productDetailBuyer.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/productDetailBuyer.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/productDetailSeller.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/productDetailSeller.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +27,17 @@
         <option value="JavaScript File" />
         <option value="Python Script" />
       </list>
+    </option>
+  </component>
+  <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
+    <envs>
+      <env key="FLASK_APP" value="app" />
+    </envs>
+    <option name="myCustomStartScript" value="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))" />
+    <option name="myEnvs">
+      <map>
+        <entry key="FLASK_APP" value="app" />
+      </map>
     </option>
   </component>
   <component name="Git.Settings">
@@ -113,7 +129,7 @@
       <workItem from="1733466411574" duration="5332000" />
       <workItem from="1733760321540" duration="4427000" />
       <workItem from="1733765589850" duration="6502000" />
-      <workItem from="1734009863931" duration="3936000" />
+      <workItem from="1734009863931" duration="6268000" />
     </task>
     <servers />
   </component>
@@ -134,7 +150,7 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/app_py$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1733875620583" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/CodeGreen$CodeGreen.coverage" NAME="CodeGreen Coverage Results" MODIFIED="1731046237034" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/CodeGreen$app.coverage" NAME="app Coverage Results" MODIFIED="1734014714026" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/CodeGreen$app.coverage" NAME="app Coverage Results" MODIFIED="1734017896175" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CodeGreen$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1731052143849" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/CodeGreen$database.coverage" NAME="database Coverage Results" MODIFIED="1734010507922" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/app_py$database.coverage" NAME="database Coverage Results" MODIFIED="1732260129456" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
