@@ -9,7 +9,7 @@
   <main>
     <section class="signup-form">
       <h2>등록한 계정 정보를 알려주세요!</h2>
-      <form action="#" method="post">
+      <form action="{{ url_for('service_findid') }}" method="get">
         <div class="input-group">
           <label for="email">이메일</label>
           <input type="text" id="email" name="email" placeholder="이메일을 입력해주세요.">
@@ -21,8 +21,8 @@
           <span class="success-msg">아이디는 {{ id }} 입니다.</span>
         {% endif %}
         <div class="extra-links">
-          <a href="/signUp">회원가입</a>
-          <a href="/login">로그인 하기</a>
+          <a href="/page/signup">회원가입</a>
+          <a href="/page/login">로그인 하기</a>
         </div>
       </form>
     </section>

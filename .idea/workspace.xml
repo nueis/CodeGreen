@@ -6,8 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="7947c1bf-824a-482d-a724-04e16a1c827d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authentication/firebase_auth.json" beforeDir="false" afterPath="$PROJECT_DIR$/Authentication/firebase_auth.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/database.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/jwt-handler.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/jwt-handler.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/login.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/signUpValidation.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/signUpValidation.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/findId.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/findId.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/homeBuyer.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/homeBuyer.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/homeSeller.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/homeSeller.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,6 +24,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="JavaScript File" />
         <option value="Python Script" />
       </list>
     </option>
@@ -53,11 +61,12 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Flask server.Flask (app.py).executor": "Run",
+    "Python.config.executor": "Run",
     "Python.database.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "develop/team",
+    "git-widget-placeholder": "develop/auth",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/gangheelee/Documents/GitHub/CodeGreen",
+    "last_opened_file_path": "/Users/gangheelee/Documents/GitHub/CodeGreen/Authentication",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -70,9 +79,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Authentication" />
       <recent name="$PROJECT_DIR$/templates" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/static" />
       <recent name="$PROJECT_DIR$/static/images" />
     </key>
@@ -102,6 +113,10 @@
       <workItem from="1729640897255" duration="695000" />
       <workItem from="1731046995790" duration="114000" />
       <workItem from="1731495493329" duration="3031000" />
+      <workItem from="1733186829629" duration="1870000" />
+      <workItem from="1733466411574" duration="5332000" />
+      <workItem from="1733760321540" duration="4427000" />
+      <workItem from="1733765589850" duration="6502000" />
     </task>
     <servers />
   </component>
@@ -109,9 +124,10 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/app_py$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1731501891086" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/app_py$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1733874441936" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/CodeGreen$CodeGreen.coverage" NAME="CodeGreen Coverage Results" MODIFIED="1731046237034" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/CodeGreen$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1731052143849" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/app_py$database.coverage" NAME="database Coverage Results" MODIFIED="1731501877265" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/app_py$database.coverage" NAME="database Coverage Results" MODIFIED="1732260129456" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/app_py$config.coverage" NAME="config Coverage Results" MODIFIED="1733766391507" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/configuration" />
   </component>
 </project>
