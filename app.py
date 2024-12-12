@@ -15,6 +15,7 @@ ST = SThandler()
 SECRET_KEY = 'super_secret_key'
 app.secret_key = SECRET_KEY
 
+
 # 업로드할 파일의 저장 경로 설정
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 
@@ -35,51 +36,51 @@ def set_default_session_values():
     # session['role'] = 'seller'
 
 # 모든 요청 전에 실행되는 로직
-# @app.before_request
-# def check_jwt_token():
-#     # 정적 파일 및 favicon 요청 예외 처리
-#     if request.path.startswith('/static') or request.path == '/favicon.ico':
-#         return
-#
-#     """제외 경로 리스트 외 모든 요청에 대해 JWT 검증"""
-#     if request.endpoint in EXCLUDED_ENDPOINTS or request.endpoint is None:
-#         return
-#
-#     # Authorization 헤더에서 토큰 추출
-#     bearerToken = request.headers.get('Authorization')
-#     if bearerToken is None:
-#         g.user = None
-#         return jsonify({"message": "Missing Authorization Header"}), 401
-#
-#     # Bearer 토큰 형식 확인
-#     if not bearerToken.startswith("Bearer "):
-#         return jsonify({"message": "Invalid Token Format"}), 401
-#
-#     # Bearer 뒷 부분의 토큰만 추출
-#     token = bearerToken.split(" ")[1]
-#
-#     try: # 토큰 디코딩
-#         decoded_user = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-#
-#         # DB에 사용자 존재 여부 확인
-#         user = DB.find_user(decoded_user.get("id"))
-#         if not user: # 존재하지 않는 사용자
-#             return jsonify({"message": "User not found"}), 401
-#
-#         # g.user에 사용자 정보 저장
-#         g.user = {
-#             "id": user["id"],  # 사용자 ID
-#             "nickname": user["nickname"],  # 사용자 닉네임
-#             "role": user["role"]  # 사용자 역할
-#         }
-#
-#     except jwt.ExpiredSignatureError: # 만료된 토큰
-#         g.user = None
-#         return jsonify({"message": "Expired Token"}), 401
-#
-#     except jwt.InvalidTokenError: # 유효하지 않은 토큰
-#         g.user = None
-#         return jsonify({"message": "Invalid Token"}), 401
+@app.before_request
+def check_jwt_token():
+    # 정적 파일 및 favicon 요청 예외 처리
+    if request.path.startswith('/static') or request.path == '/favicon.ico':
+        return
+
+    """제외 경로 리스트 외 모든 요청에 대해 JWT 검증"""
+    if request.endpoint in EXCLUDED_ENDPOINTS or request.endpoint is None:
+        return
+
+    # Authorization 헤더에서 토큰 추출
+    bearerToken = request.headers.get('Authorization')
+    if bearerToken is None:
+        g.user = None
+        return jsonify({"message": "Missing Authorization Header"}), 401
+
+    # Bearer 토큰 형식 확인
+    if not bearerToken.startswith("Bearer "):
+        return jsonify({"message": "Invalid Token Format"}), 401
+
+    # Bearer 뒷 부분의 토큰만 추출
+    token = bearerToken.split(" ")[1]
+
+    try: # 토큰 디코딩
+        decoded_user = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+
+        # DB에 사용자 존재 여부 확인
+        user = DB.find_user(decoded_user.get("id"))
+        if not user: # 존재하지 않는 사용자
+            return jsonify({"message": "User not found"}), 401
+
+        # g.user에 사용자 정보 저장
+        g.user = {
+            "id": user["id"],  # 사용자 ID
+            "nickname": user["nickname"],  # 사용자 닉네임
+            "role": user["role"]  # 사용자 역할
+        }
+
+    except jwt.ExpiredSignatureError: # 만료된 토큰
+        g.user = None
+        return jsonify({"message": "Expired Token"}), 401
+
+    except jwt.InvalidTokenError: # 유효하지 않은 토큰
+        g.user = None
+        return jsonify({"message": "Invalid Token"}), 401
 
 @app.route('/')
 def default():
@@ -220,13 +221,19 @@ users = {}
 # def index():
 #     return render_template("indexSeller.html", logged_in=('id' in session), user=session.get('nickname'))
 
-# @app.route("/", methods=['GET', 'POST'])
-# def home():
-#     if 'id' in session:
-#         if session['role'] == 'seller':
-#             return render_template("homeSeller.html", logged_in=True, user=session.get('nickname'))
-#         return render_template("homeBuyer.html", logged_in=True, user=session.get('nickname'))
-#     return redirect(url_for("login_user"))  # 로그인하지 않은 경우 로그인 화면으로 리다이렉트
+@app.route("/index")
+def index():
+    return render_template("indexSeller.html", logged_in=('id' in session), user=session.get('nickname'))
+
+@app.route("/", methods=['GET', 'POST'])
+def home():
+    if 'id' in session:
+        recent_sales = DB.get_recent_items(5)
+
+        if session['role'] == 'seller':
+            return render_template("homeSeller.html", logged_in=True, user=session.get('nickname'), recent_sales=recent_sales)
+        return render_template("homeBuyer.html", logged_in=True, user=session.get('nickname'), recent_sales=recent_sales)
+    return redirect(url_for("login_user"))  # 로그인하지 않은 경우 로그인 화면으로 리다이렉트
 
 # 상품 상세 페이지
 @app.route("/view_detail/<product_name>/")
@@ -243,17 +250,48 @@ def product_detail(product_name):
             logging.error(f"Product with name '{product_name}' not found.")
             return f"Product '{product_name}' not found", 404
 
-        return render_template(
-            "productDetailBuyer.html",
-            product=product,
-            logged_in=('id' in session),
-            user=session.get('nickname')
-        )
-    except Exception as e:
-        logging.error(f"Error retrieving product details: {e}")
-        return f"An unexpected error occurred: {str(e)}", 500
+# <<<<<<< HEAD
+#         return render_template(
+#             "productDetailBuyer.html",
+#             product=product,
+#             logged_in=('id' in session),
+#             user=session.get('nickname')
+#         )
+# =======
+#         # 템플릿 렌더링: 역할에 따라 다른 템플릿 선택
+#         if 'id' in session:
+#             if session['role'] == 'seller':
+#                 return render_template(
+#                     "productDetailSeller.html",  # 판매자용 템플릿
+#                     product=product,
+#                     name=product['name'],
+#                     logged_in=True,
+#                     user=session.get('nickname')
+#                 )
+#             elif session['role'] == 'buyer':
+#                 return render_template(
+#                     "productDetailBuyer.html",  # 구매자용 템플릿
+#                     product=product,
+#                     name=product['name'],
+#                     logged_in=True,
+#                     user=session.get('nickname')
+#                 )
+#         else:
+#             # 비로그인 사용자는 기본적으로 구매자용 템플릿 사용
+#             return render_template(
+#                 "productDetailBuyer.html",
+#                 product=product,
+#                 name=product['name'],
+#                 logged_in=False,
+#                 user=None
+#             )
+# >>>>>>> develop/team
+#     except Exception as e:
+#         logging.error(f"Error retrieving product details: {e}")
+#         return f"An unexpected error occurred: {str(e)}", 500
 
 
+# 마이 페이지
 @app.route("/mypage")
 def view_review():
     if session['role'] == 'seller':
@@ -261,7 +299,8 @@ def view_review():
     elif session['role'] == 'buyer':
         return render_template("mypageBuy.html")
     else:
-        return redirect(url_for("login"))
+        return redirect(url_for("login_user"))
+
 
 @app.route("/browse", methods=["GET"])
 def browse():
@@ -302,27 +341,63 @@ def browse():
         for product in products:
             product["img_path"] = product.get("img_path", "default.jpg")
 
-        # 템플릿 렌더링
-        return render_template(
-            "browseBuyer.html",
-            products=products,
-            page=page,
-            total_pages=total_pages,
-            green_view=green_view,
-            logged_in=('id' in session),
-            user=session.get('nickname')
-        )
+        # 템플릿 렌더링: 역할에 따라 다른 템플릿 선택
+        if 'id' in session:
+            if session['role'] == 'seller':
+                return render_template(
+                    "browseSeller.html",
+                    products=products,
+                    page=page,
+                    total_pages=total_pages,
+                    green_view=green_view,
+                    logged_in=True,
+                    user=session.get('nickname')
+                )
+            elif session['role'] == 'buyer':
+                return render_template(
+                    "browseBuyer.html",
+                    products=products,
+                    page=page,
+                    total_pages=total_pages,
+                    green_view=green_view,
+                    logged_in=True,
+                    user=session.get('nickname')
+                )
+        else:
+            # 비로그인 사용자 기본 동작
+            return render_template(
+                "browseBuyer.html",
+                products=products,
+                page=page,
+                total_pages=total_pages,
+                green_view=green_view,
+                logged_in=False,
+                user=None
+            )
     except Exception as e:
         logging.error(f"Error loading products: {e}")
         return f"Error loading products: {e}", 500
 
 
+@app.route('/your_route')
+def your_view_function():
+    items = DB.get_items()  # DB에서 아이템 가져오기
+    print(items)  # 콘솔에 출력
+    return render_template('your_template.html', items=items)
 
 
-# 상품 등록
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    # 로그인 여부 확인
+    if 'id' not in session:
+        flash("상품 등록은 로그인한 사용자만 이용할 수 있습니다.")
+        return redirect(url_for("login_user"))
+    
     if request.method == "POST":
+        # 현재 로그인 한 사용자 ID 가져오기
+        seller_id = session.get("id")
+
         # 상품 등록 데이터 수집
         name = request.form.get("name")
         price = float(request.form.get("price").replace('₩', '').replace(',', ''))
@@ -343,7 +418,14 @@ def register():
             "category": category,
             "description_short": description_short,
             "description_long": description_long,
-            "img_path": image_filename
+# <<<<<<< HEAD
+#             "img_path": image_filename
+# =======
+#             "category": category,
+#             "ewha_green": ewha_green,
+#             "img_path": image_filename,
+#             "seller_id": seller_id
+# >>>>>>> develop/team
         }
 
         # Firebase에 데이터 저장
@@ -352,7 +434,13 @@ def register():
             return redirect(url_for("browse"))
         return render_template("error.html", message="상품 등록에 실패했습니다.")
 
-    return render_template("register.html")
+    # GET 요청 시, 로그인 정보와 함께 렌더링
+    return render_template(
+        "register.html", 
+        logged_in=('id' in session), 
+        user=session.get('nickname')
+    )
+
 
 @app.route("/logout")
 def logout():
@@ -371,6 +459,161 @@ def reviews():
         return render_template("productreviewsSeller.html", reviews=reviews_data, logged_in=('id' in session), user=session.get('nickname'))
 
     return render_template('productreviewsBuyer.html', reviews=reviews_data)
+
+@app.route('/reviews', methods=['GET'])
+def review_list():
+    try:
+        # Fetch and validate reviews
+        reviews = DB.get_reviews()
+        if isinstance(reviews, dict):
+            reviews = list(reviews.values()) 
+        valid_reviews = [review for review in reviews if review is not None]
+
+        # Pagination logic
+        page = request.args.get('page', default=1, type=int)
+        reviews_per_page = 8
+        total_reviews = len(valid_reviews)
+        total_pages = (total_reviews + reviews_per_page - 1) // reviews_per_page
+
+        if page < 1:
+            page = 1
+        elif page > total_pages:
+            page = total_pages
+
+        start_idx = (page - 1) * reviews_per_page
+        end_idx = start_idx + reviews_per_page
+        paginated_reviews = valid_reviews[start_idx:end_idx]
+
+        # Default handling for missing fields
+        for review in paginated_reviews:
+            review["img_path"] = review.get("img_path", "default.jpg")
+
+        return render_template(
+            "reviewList.html",
+            reviews=paginated_reviews,
+            page=page,
+            total_pages=total_pages,
+            logged_in=('id' in session),
+            user=session.get('nickname')
+        )
+    except Exception as e:
+        logging.error(f"Error loading reviews: {e}")
+        return f"Error loading reviews: {str(e)}", 500
+
+@app.route('/myreviews')
+def myreview_list():
+    try:
+        reviews = DB.get_review_by_nickname(session.get('nickname'))
+        if reviews is None:
+            reviews = []
+        elif isinstance(reviews, dict):
+            reviews = list(reviews.values()) 
+        valid_reviews = [review for review in reviews if review is not None]
+        
+        # Pagination settings
+        page = request.args.get('page', default=1, type=int)
+        reviews_per_page = 8
+        total_reviews = len(valid_reviews)
+        total_pages = (total_reviews + reviews_per_page - 1) // reviews_per_page
+
+        if page < 1:
+            page = 1
+        elif page > total_pages:
+            page = total_pages
+
+        start_idx = (page - 1) * reviews_per_page
+        end_idx = start_idx + reviews_per_page
+        paginated_reviews = valid_reviews[start_idx:end_idx]
+
+        # Default handling for missing fields
+        for review in paginated_reviews:
+            review["img_path"] = review.get("img_path", "default.jpg")
+
+        return render_template(
+            "myreviewList.html",
+            reviews=paginated_reviews,
+            page=page,
+            total_pages=total_pages,
+            logged_in=('id' in session),
+            user=session.get('nickname')
+        )
+    except Exception as e:
+        logging.error(f"Error loading reviews: {e}")
+        return f"Error loading reviews: {str(e)}", 500
+
+@app.route("/reviews/register/<name>/")
+def register_review_init(name):
+    user_id = session.get('id')
+    user_nickname = session.get('nickname')
+    return render_template("reviewRegister.html", 
+                           product_name=name, 
+                           user_id=user_id, 
+                           user_nickname=user_nickname,
+                           user=user_nickname,
+                           logged_in=('id' in session))
+
+@app.route('/reviews/register', methods = ['GET', 'POST'])
+def register_review():
+    
+    if request.method == "POST":
+        review_title = request.form.get("review_title")
+        review_content = request.form.get("review_content")
+        rating = request.form.get("rating", type=int) 
+        purchase_date = request.form.get("purchase_date")
+        product_name = request.form.get("product_name")
+
+        # 이미지 파일 처리
+        image = request.files['image']
+        image_filename = f"{product_name}_{image.filename}"
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+        image.save(image_path)
+
+
+        # Firebase에 데이터 구성
+        review_id = str(len(DB.get_reviews())+1)
+        new_review = {
+            "user_nickname": session.get('nickname'),
+            "product_name":product_name,
+            "review_title": review_title,
+            "review_content": review_content, 
+            "rating": rating,
+            "img_path": image_filename,      
+            "purchase_date": purchase_date,
+            "review_date": datetime.today().strftime('%Y-%m-%d'),
+            "review_id": review_id
+        }
+
+        # Firebase에 데이터 추가 
+        DB.insert_review(review_id, new_review)
+        return redirect(url_for("review_detail", review_id=review_id))
+    return render_template("register_review.html")
+
+@app.route('/reviews/<int:review_id>')
+def review_detail(review_id):
+    review = DB.get_review_by_id(review_id)
+    if review:
+        return render_template("reviewDetail.html", review=review,
+                               logged_in=('id' in session),
+                               user=session.get('nickname'))
+    return "리뷰를 찾을 수 없습니다.", 404
+
+@app.route('/show_heart/<name>/', methods=['GET'])
+def show_heart(name):
+    my_heart = DB.get_heart_byname(session['id'], name)
+    return jsonify({'my_heart': my_heart})
+
+
+@app.route('/like/<name>/', methods=['POST'])
+def like(name):
+    print(request.form)
+    my_heart = DB.update_heart(session['id'], 'Y', name)
+    return jsonify({'msg': '좋아요 완료!'})
+
+@app.route('/unlike/<name>/', methods=['POST'])
+def unlike(name):
+
+    my_heart = DB.update_heart(session['id'], 'N', name)
+    return jsonify({'msg': '좋아요 취소!'})
 
 if __name__ == "__main__":
     app.run(debug=True)

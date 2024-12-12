@@ -9,6 +9,7 @@
 <main>
     <h1>My 리뷰</h1>
     <div class="review-grid">
+        {% if reviews and reviews|length > 0 %}
         <!-- Review card structure repeated as needed -->
         {% for review in reviews %}
         <div class="review-card">
@@ -24,6 +25,11 @@
             </div>
         </div>
         {% endfor %}
+        {% else %}
+            <div class="no-reviews-message">
+                <p>작성된 리뷰가 없습니다.</p>
+            </div>
+        {% endif %}
     </div>
 
     <!-- Pagination -->

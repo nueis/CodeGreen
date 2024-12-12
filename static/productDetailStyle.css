@@ -57,3 +57,27 @@
 .actions button:hover {
     background-color: #45a049; /* 호버 시 배경 색상 변경 */
 }
+
+/* Like Button */
+.actions .like-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background-color: white;  
+    color: #FF4081;  
+    border: 2px solid #FF4081; 
+    border-radius: 5px;  
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.actions .like-button:hover {
+    background-color: #FF4081;  
+    color: white;  
+}
+
+.actions .heart-icon {
+    margin-right: 10px; 
+    font-size: 20px;  
+}
