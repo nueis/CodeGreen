@@ -11,14 +11,9 @@ app = Flask(__name__, static_folder='static')
 DB = DBhandler()
 ST = SThandler()
 
-# @app.before_request
-# def set_default_session_values():
-#     # 세션에 'role' 키가 없을 경우 기본값을 'Seller'로 설정
-#     if 'role' not in session:
-#         session['role'] = 'Seller'
-# 세션 관리를 위한 키 설정
 SECRET_KEY = 'super_secret_key'
 app.secret_key = SECRET_KEY
+
 
 
 # 업로드할 파일의 저장 경로 설정
@@ -255,45 +250,43 @@ def product_detail(product_name):
             logging.error(f"Product with name '{product_name}' not found.")
             return f"Product '{product_name}' not found", 404
 
-# <<<<<<< HEAD
-#         return render_template(
-#             "productDetailBuyer.html",
-#             product=product,
-#             logged_in=('id' in session),
-#             user=session.get('nickname')
-#         )
-# =======
-#         # 템플릿 렌더링: 역할에 따라 다른 템플릿 선택
-#         if 'id' in session:
-#             if session['role'] == 'seller':
-#                 return render_template(
-#                     "productDetailSeller.html",  # 판매자용 템플릿
-#                     product=product,
-#                     name=product['name'],
-#                     logged_in=True,
-#                     user=session.get('nickname')
-#                 )
-#             elif session['role'] == 'buyer':
-#                 return render_template(
-#                     "productDetailBuyer.html",  # 구매자용 템플릿
-#                     product=product,
-#                     name=product['name'],
-#                     logged_in=True,
-#                     user=session.get('nickname')
-#                 )
-#         else:
-#             # 비로그인 사용자는 기본적으로 구매자용 템플릿 사용
-#             return render_template(
-#                 "productDetailBuyer.html",
-#                 product=product,
-#                 name=product['name'],
-#                 logged_in=False,
-#                 user=None
-#             )
-# >>>>>>> develop/team
-#     except Exception as e:
-#         logging.error(f"Error retrieving product details: {e}")
-#         return f"An unexpected error occurred: {str(e)}", 500
+        return render_template(
+            "productDetailBuyer.html",
+            product=product,
+            logged_in=('id' in session),
+            user=session.get('nickname')
+        )
+        # 템플릿 렌더링: 역할에 따라 다른 템플릿 선택
+        if 'id' in session:
+            if session['role'] == 'seller':
+                return render_template(
+                    "productDetailSeller.html",  # 판매자용 템플릿
+                    product=product,
+                    name=product['name'],
+                    logged_in=True,
+                    user=session.get('nickname')
+                )
+            elif session['role'] == 'buyer':
+                return render_template(
+                    "productDetailBuyer.html",  # 구매자용 템플릿
+                    product=product,
+                    name=product['name'],
+                    logged_in=True,
+                    user=session.get('nickname')
+                )
+        else:
+            # 비로그인 사용자는 기본적으로 구매자용 템플릿 사용
+            return render_template(
+                "productDetailBuyer.html",
+                product=product,
+                name=product['name'],
+                logged_in=False,
+                user=None
+            )
+
+    except Exception as e:
+        logging.error(f"Error retrieving product details: {e}")
+        return f"An unexpected error occurred: {str(e)}", 500
 
 # 구매 (주문 생성)
 @app.route("/create_order", methods=["POST"])

@@ -10,7 +10,7 @@ class SThandler:
 
     def __init__(self):
         # Firebase Admin SDK 초기화
-        with open('./authentication/codegreen-1211-firebase-adminsdk-mytx5-d061b9d4ce.json') as f:
+        with open('./configuration/codegreen-1211-firebase-adminsdk-mytx5-d061b9d4ce.json') as f:
             config = json.load(f)
 
         if not firebase_admin._apps:  # 이미 초기화된 경우 다시 초기화하지 않음
@@ -26,7 +26,7 @@ class SThandler:
 
     def upload_file_to_firebase(self, file):
         """Firebase Storage에 파일 업로드"""
-        if file and allowed_file(file.filename):  # 파일이 유효한지 체크
+        if file and self.allowed_file(file.filename):  # 파일이 유효한지 체크
             filename = secure_filename(file.filename)  # 안전한 파일 이름 생성
             bucket = storage.bucket()  # Firebase Storage 버킷 가져오기
             blob = bucket.blob(f'profile_pics/{filename}')  # 업로드할 경로 설정

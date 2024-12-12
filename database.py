@@ -3,7 +3,7 @@ import json
 
 class DBhandler:
     def __init__(self):
-        with open('./authentication/firebase_auth.json') as f:
+        with open('./configuration/firebase_auth.json') as f:
             config = json.load(f)
 
         # Firebase 초기화
@@ -206,7 +206,6 @@ class DBhandler:
         except Exception as e:
             print(f"Error retrieving reviews for seller {seller_id}: {e}")
             return []
-##-----------------------------------------------------------------------------------------------------------------------------------------
                 
     # home 화면 recent sales 부분 추가
     def get_recent_items(self, count=5):
