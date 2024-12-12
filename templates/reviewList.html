@@ -9,7 +9,6 @@
 <main>
     <h1>전체 리뷰</h1>
     <div class="review-grid">
-        <!-- Review card structure repeated as needed -->
         {% for review in reviews %}
         <div class="review-card"
             onclick="location.href='/reviews/{{review.review_id}}';"
@@ -30,17 +29,17 @@
 
     <!-- Pagination -->
     <div class="pagination">
-        <a href="{{ url_for('review_list', page=page-1) }}" class="page-arrow {% if page == 1 %}disabled{% endif %}">❮</a>
+        <a href="{{ url_for('service_reviews', page=page-1) }}" class="page-arrow {% if page == 1 %}disabled{% endif %}">❮</a>
 
         {% for num in range(1, total_pages + 1) %}
             {% if num == page %}
                 <span class="page-number active">{{ num }}</span>
             {% else %}
-            <a href="{{ url_for('review_list', page=num) }}" class="page-number">{{ num }}</a>
+            <a href="{{ url_for('service_reviews', page=num) }}" class="page-number">{{ num }}</a>
             {% endif %}
         {% endfor %}
         
-        <a href="{{ url_for('review_list', page=page + 1) }}" class="page-arrow {% if page == total_pages %}disabled{% endif %}">❯</a>
+        <a href="{{ url_for('service_reviews', page=page + 1) }}" class="page-arrow {% if page == total_pages %}disabled{% endif %}">❯</a>
 </div>
 </main>
 

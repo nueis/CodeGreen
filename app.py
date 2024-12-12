@@ -25,6 +25,7 @@ EXCLUDED_ENDPOINTS = [
     'page_login', 'service_login',
     'page_findid', 'service_findid',
     'service_browse',
+    'service_reviews',
     'default'
 ]
 
@@ -557,21 +558,40 @@ def logout():
     session.clear()
     return redirect(url_for("home"))
 
-@app.route('/review')
-def reviews():
-    reviews_data = [
-        {"title": "리뷰 제목", "author": "작성자 닉네임", "date": "작성 날짜"},
-        {"title": "리뷰 제목", "author": "작성자 닉네임", "date": "작성 날짜"},
-        {"title": "리뷰 제목", "author": "작성자 닉네임", "date": "작성 날짜"},
-    ]
+### 세션 데모용 엔드포인트 주석 처리
+# @app.route('/service/review')
+# def service_review():
+#     reviews_data = [
+#         {"title": "리뷰 제목", "author": "작성자 닉네임", "date": "작성 날짜"},
+#         {"title": "리뷰 제목", "author": "작성자 닉네임", "date": "작성 날짜"},
+#         {"title": "리뷰 제목", "author": "작성자 닉네임", "date": "작성 날짜"},
+#     ]
+#
+#     if hasattr(g, 'user') and g.user:
+#         if g.user['role'] == 'seller':
+#             return render_template(
+#                 "productreviewsSeller.html",
+#                 reviews=reviews_data,
+#                 logged_in=True,
+#                 user=g.user['nickname']
+#             )
+#         else:
+#             return render_template(
+#                 "productreviewsBuyer.html",
+#                 reviews=reviews_data,
+#                 logged_in=True,
+#                 user=g.user['nickname']
+#             )
+#
+#     return render_template(
+#         'productreviewsBuyer.html',
+#         reviews=reviews_data,
+#         logged_in=False,
+#         user="GUEST"
+#     )
 
-    if session['role'] == 'seller':
-        return render_template("productreviewsSeller.html", reviews=reviews_data, logged_in=('id' in session), user=session.get('nickname'))
-
-    return render_template('productreviewsBuyer.html', reviews=reviews_data)
-
-@app.route('/reviews', methods=['GET'])
-def review_list():
+@app.route('/service/reviews', methods=['GET'])
+def service_reviews():
     try:
         # Fetch and validate reviews
         reviews = DB.get_reviews()
@@ -594,18 +614,43 @@ def review_list():
         end_idx = start_idx + reviews_per_page
         paginated_reviews = valid_reviews[start_idx:end_idx]
 
-        # Default handling for missing fields
+        ### firebase storage로 변경하면서 주석 처리
+        # # Default handling for missing fields
+        # for review in paginated_reviews:
+        #     review["img_path"] = review.get("img_path", "default.jpg")
+
+        # Default handling for missing image URLs
         for review in paginated_reviews:
-            review["img_path"] = review.get("img_path", "default.jpg")
+            if "img_path" not in review or not review["img_path"]:
+                review["img_path"] = "https://storage.googleapis.com/버킷네임수정필요/default.jpg"
+
+        if hasattr(g, 'user') and g.user:
+            if g.user['role'] == 'seller':
+                return render_template(
+                    "productreviewsSeller.html",
+                    page=page,
+                    reviews=paginated_reviews,
+                    logged_in=True,
+                    user=g.user['nickname']
+                )
+            else:
+                return render_template(
+                    "productreviewsBuyer.html",
+                    page=page,
+                    reviews=paginated_reviews,
+                    logged_in=True,
+                    user=g.user['nickname']
+                )
 
         return render_template(
             "reviewList.html",
             reviews=paginated_reviews,
             page=page,
             total_pages=total_pages,
-            logged_in=('id' in session),
-            user=session.get('nickname')
+            logged_in=False,
+            user="GUEST"
         )
+
     except Exception as e:
         logging.error(f"Error loading reviews: {e}")
         return f"Error loading reviews: {str(e)}", 500
@@ -651,7 +696,7 @@ def myreview_list():
         logging.error(f"Error loading reviews: {e}")
         return f"Error loading reviews: {str(e)}", 500
 
-@app.route("/reviews/register/<name>/")
+@app.route("/service/reviews/register/<name>/")
 def register_review_init(name):
     user_id = session.get('id')
     user_nickname = session.get('nickname')
@@ -662,7 +707,7 @@ def register_review_init(name):
                            user=user_nickname,
                            logged_in=('id' in session))
 
-@app.route('/reviews/register', methods = ['GET', 'POST'])
+@app.route('/service/reviews/register', methods = ['GET', 'POST'])
 def register_review():
     
     if request.method == "POST":
@@ -707,7 +752,7 @@ def register_review():
     return render_template("register_review.html")
 
 
-@app.route('/reviews/<int:review_id>')
+@app.route('/service/reviews/<int:review_id>')
 def review_detail(review_id):
     review = DB.get_review_by_id(review_id)
     if review:
