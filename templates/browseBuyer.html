@@ -22,7 +22,8 @@
     <div class="product-grid">
         {% for product in products %}
         <div class="product-card" onclick="location.href='{{ url_for('product_detail', product_name=product.name) }}'">
-            <img src="{{ url_for('static', filename='uploads/' + product.img_path) }}" alt="상품 이미지">
+{#            <img src="{{ url_for('static', filename='uploads/' + product.img_path) }}" alt="상품 이미지">#}
+            <img src="{{product.img_url}}" alt="상품 이미지">
             <div class="product-info">
                 <h3>{{ product.name }}</h3>
                 <p>₩ {{ product.price | int }}</p>

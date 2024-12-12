@@ -22,8 +22,8 @@
     </ul>
     <div class="navbar__user">
       {% if logged_in %}
-        <span class="user__role">{{role}}</span>
-        <span class="user__nickname">{{user}}</span>
+        <span class="user__role">Seller</span>
+        <span class="user__nickname">{{session["nickname"]}}</span>
         <div class="user__avatar">
         <img src="{{ session['profile_pic'] }}" alt="User Avatar">
 {#          <img src="{{profile_pic}}" alt="User Avatar">#}

@@ -612,53 +612,59 @@ def your_view_function():
     return render_template('your_template.html', items=items)
 
 
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     # 로그인 여부 확인
     if 'id' not in session:
         flash("상품 등록은 로그인한 사용자만 이용할 수 있습니다.")
         return redirect(url_for("login_user"))
-    
+
     if request.method == "POST":
-        # 현재 로그인 한 사용자 ID 가져오기
-        seller_id = session.get("id")
+        try:
+            # 현재 로그인 한 사용자 ID 가져오기
+            seller_id = session.get("id")
 
-        # 상품 등록 데이터 수집
-        name = request.form.get("name")
-        price = float(request.form.get("price").replace('₩', '').replace(',', ''))
-        category = request.form.get("category")
-        description_short = request.form.get("description_short")
-        description_long = request.form.get("description_long")
+            # 상품 등록 데이터 수집
+            name = request.form.get("name")
+            price = float(request.form.get("price").replace('₩', '').replace(',', ''))
+            category = request.form.get("category")
+            description_short = request.form.get("description_short")
+            description_long = request.form.get("description_long")
+            ewha_green = request.form.get("ewha_green")
 
-        # 이미지 처리
-        image = request.files['file']
-        image_filename = f"{name}_{image.filename}"
-        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
-        image.save(image_path)
+            # 이미지 처리
+            image = request.files['file']
+            if image:
+                st_handler = SThandler()  # SThandler 객체 생성
+                image_url = st_handler.upload_file_to_firebase(image)  # Firebase에 이미지 업로드
+            else:
+                image_url = None  # 이미지가 없는 경우
 
-        # Firebase에 저장할 데이터 구성
-        product_data = {
-            "name": name,
-            "price": price,
-            "category": category,
-            "description_short": description_short,
-            "description_long": description_long,
-            "ewha_green": ewha_green,
-            "img_path": image_filename,
-            "seller_id": seller_id
-        }
+            # Firebase Database에 저장할 데이터 구성
+            product_data = {
+                "name": name,
+                "price": price,
+                "category": category,
+                "description_short": description_short,
+                "description_long": description_long,
+                "img_url": image_url,
+                "seller_id": seller_id,
+                "ewha_green": ewha_green
+            }
 
-        # Firebase에 데이터 저장
-        product_id = str(len(DB.get_items()) + 1)
-        if DB.insert_item(product_id, product_data):
-            return redirect(url_for('service_browse'))
-        return render_template("error.html", message="상품 등록에 실패했습니다.")
+            # Firebase Database에 데이터 저장
+            product_id = str(len(DB.get_items()) + 1)
+            if DB.insert_item(product_id, product_data):
+                return redirect(url_for('service_browse'))
+            return redirect(url_for('service_browse'), message="상품 등록에 실패했습니다.")
+        except Exception as e:
+            print(f"Error during product registration: {e}")
+            return redirect(url_for('service_browse'), message="상품 등록에 실패했습니다.")
 
     # GET 요청 시, 로그인 정보와 함께 렌더링
     return render_template(
-        "register.html", 
-        logged_in=('id' in session), 
+        "register.html",
+        logged_in=('id' in session),
         user=session.get('nickname')
     )
 
