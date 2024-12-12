@@ -1,5 +1,5 @@
 import logging
-from flask import Flask, render_template, request, flash, redirect, url_for, session, jsonify, g
+from flask import Flask, render_template, request, flash, redirect, url_for, session, jsonify, g, make_response
 from database import DBhandler
 from storage import SThandler
 from datetime import datetime, timedelta
@@ -21,7 +21,8 @@ UPLOAD_FOLDER = os.path.join('static', 'uploads')
 
 # JWT 검증 제외 경로 리스트
 EXCLUDED_ENDPOINTS = [
-    'page_signup', 'service_siginup',
+    'service_checkid', 'service_checknickname', 'service_checkphone',
+    'page_signup', 'service_signup',
     'page_login', 'service_login',
     'page_findid', 'service_findid',
     'service_browse',
@@ -38,51 +39,51 @@ EXCLUDED_ENDPOINTS = [
 #     # session['role'] = 'seller'
 
 # 모든 요청 전에 실행되는 로직
-@app.before_request
-def check_jwt_token():
-    # 정적 파일 및 favicon 요청 예외 처리
-    if request.path.startswith('/static') or request.path == '/favicon.ico':
-        return
-
-    """제외 경로 리스트 외 모든 요청에 대해 JWT 검증"""
-    if request.endpoint in EXCLUDED_ENDPOINTS or request.endpoint is None:
-        return
-
-    # Authorization 헤더에서 토큰 추출
-    bearerToken = request.headers.get('Authorization')
-    if bearerToken is None:
-        g.user = None
-        return jsonify({"message": "Missing Authorization Header"}), 401
-
-    # Bearer 토큰 형식 확인
-    if not bearerToken.startswith("Bearer "):
-        return jsonify({"message": "Invalid Token Format"}), 401
-
-    # Bearer 뒷 부분의 토큰만 추출
-    token = bearerToken.split(" ")[1]
-
-    try: # 토큰 디코딩
-        decoded_user = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-
-        # DB에 사용자 존재 여부 확인
-        user = DB.find_user(decoded_user.get("id"))
-        if not user: # 존재하지 않는 사용자
-            return jsonify({"message": "User not found"}), 401
-
-        # g.user에 사용자 정보 저장
-        g.user = {
-            "id": user["id"],  # 사용자 ID
-            "nickname": user["nickname"],  # 사용자 닉네임
-            "role": user["role"]  # 사용자 역할
-        }
-
-    except jwt.ExpiredSignatureError: # 만료된 토큰
-        g.user = None
-        return jsonify({"message": "Expired Token"}), 401
-
-    except jwt.InvalidTokenError: # 유효하지 않은 토큰
-        g.user = None
-        return jsonify({"message": "Invalid Token"}), 401
+# @app.before_request
+# def check_jwt_token():
+#     # 정적 파일 및 favicon 요청 예외 처리
+#     if request.path.startswith('/static') or request.path == '/favicon.ico':
+#         return
+#
+#     """제외 경로 리스트 외 모든 요청에 대해 JWT 검증"""
+#     if request.endpoint in EXCLUDED_ENDPOINTS or request.endpoint is None:
+#         return
+#
+#     # Authorization 헤더에서 토큰 추출
+#     bearerToken = request.headers.get('Authorization')
+#     if bearerToken is None:
+#         g.user = None
+#         return jsonify({"message": "Missing Authorization Header"}), 401
+#
+#     # Bearer 토큰 형식 확인
+#     if not bearerToken.startswith("Bearer "):
+#         return jsonify({"message": "Invalid Token Format"}), 401
+#
+#     # Bearer 뒷 부분의 토큰만 추출
+#     token = bearerToken.split(" ")[1]
+#
+#     try: # 토큰 디코딩
+#         decoded_user = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+#
+#         # DB에 사용자 존재 여부 확인
+#         user = DB.find_user(decoded_user.get("id"))
+#         if not user: # 존재하지 않는 사용자
+#             return jsonify({"message": "User not found"}), 401
+#
+#         # g.user에 사용자 정보 저장
+#         g.user = {
+#             "id": user["id"],  # 사용자 ID
+#             "nickname": user["nickname"],  # 사용자 닉네임
+#             "role": user["role"]  # 사용자 역할
+#         }
+#
+#     except jwt.ExpiredSignatureError: # 만료된 토큰
+#         g.user = None
+#         return jsonify({"message": "Expired Token"}), 401
+#
+#     except jwt.InvalidTokenError: # 유효하지 않은 토큰
+#         g.user = None
+#         return jsonify({"message": "Invalid Token"}), 401
 
 @app.route('/')
 def default():
@@ -90,46 +91,62 @@ def default():
     ####### 세션 시연용 code####################################################################################
     #########################################################################################################
 
-    # # 세션에 role이 설정되어 있는지 확인
-    # role = session.get('role', None)  # 기본값은 None으로 설정
-    #
-    # if role == 'buyer':
-    #     return render_template("homeBuyer.html", loggedIn=True, user=session.get('nickname', 'GUEST'))
-    # elif role == 'seller':
-    #     return render_template("homeSeller.html", loggedIn=True, user=session.get('nickname', 'GUEST'))
-    # else:
-    #     # role 값이 없거나 잘못된 경우 기본값으로 GUEST 처리
-    #     return render_template("homeBuyer.html", loggedIn=False, user="GUEST")
+    # 세션에 role이 설정되어 있는지 확인
+    role = session.get('role', None)  # 기본값은 None으로 설정
+    recent_sales = DB.get_recent_items(5)
+
+    if role == 'seller':
+        return render_template(
+            "homeSeller.html",
+            logged_in=True,
+            user=session['nickname'],
+            recent_sales=recent_sales
+        )
+    elif role == 'buyer':
+        return render_template(
+            "homeBuyer.html",
+            logged_in=True,
+            user=session['nickname'],
+            recent_sales=recent_sales
+        )
+    else:
+        # role 값이 없거나 잘못된 경우 기본값으로 GUEST 처리
+        return render_template(
+            "homeBuyer.html",
+            logged_in=False,
+            user="GUEST",
+            recent_sales=recent_sales
+        )
 
     #########################################################################################################
     ####### 프로덕선용 code####################################################################################
     #########################################################################################################
 
-    recent_sales = DB.get_recent_items(5)
-
-    if hasattr(g, 'user') and g.user:
-
-        if g.user['role'] == 'seller':
-            return render_template(
-                "homeSeller.html",
-                logged_in=True,
-                user=g.user['nickname'],
-                recent_sales=recent_sales
-            )
-
-        else:
-            return render_template(
-                "homeBuyer.html",
-                logged_in=True,
-                user=g.user['nickname'],
-                recent_sales=recent_sales
-            )
-    return render_template(
-        "homeBuyer.html",
-        logged_in=False,
-        user="GUEST",
-        recent_sales=recent_sales
-    )
+    # recent_sales = DB.get_recent_items(5)
+    #
+    # if hasattr(g, 'user') and g.user:
+    #
+    #     if g.user['role'] == 'seller':
+    #         return render_template(
+    #             "homeSeller.html",
+    #             logged_in=True,
+    #             user=g.user['nickname'],
+    #             recent_sales=recent_sales
+    #         )
+    #
+    #     else:
+    #         return render_template(
+    #             "homeBuyer.html",
+    #             logged_in=True,
+    #             user=g.user['nickname'],
+    #             recent_sales=recent_sales
+    #         )
+    # return render_template(
+    #     "homeBuyer.html",
+    #     logged_in=False,
+    #     user="GUEST",
+    #     recent_sales=recent_sales
+    # )
 
 
 # 회원가입 페이지
@@ -137,13 +154,72 @@ def default():
 def page_signup():
     return render_template("signUp.html")
 
+# 아이디 중복 체크
+@app.route("/service/checkid", methods=['GET'])
+def service_checkid():
+    user_id = request.args.get("id")
+    if not user_id:
+        return make_response(jsonify({"message": "아이디를 입력해주세요."}), 400)
+
+    if DB.check_user_exists(user_id):  # DB에 이미 존재하는 경우
+        return make_response(
+            jsonify({"message": "이미 존재하는 아이디입니다."}),
+            200
+        )
+    else:
+        return make_response(
+            jsonify({"message": "사용 가능한 아이디입니다."}),
+            200
+        )
+
+# 닉네임 중복 체크
+@app.route("/service/checknickname", methods=['GET'])
+def service_checknickname():
+    user_id = request.args.get("nickname")
+    if not user_id:
+        return make_response(jsonify({"message": "아이디를 입력해주세요."}), 400)
+
+    if DB.check_user_exists(user_id):  # DB에 이미 존재하는 경우
+        return make_response(
+            jsonify({"message": "이미 존재하는 닉네임입니다."}),
+            200
+        )
+    else:
+        return make_response(
+            jsonify({"message": "사용 가능한 닉네임입니다."}),
+            200
+        )
+
+# 전화번호 중복 체크
+@app.route("/service/checkphone", methods=['GET'])
+def service_checkphone():
+    try:
+        phone_number = request.args.get('phone', '').strip()
+
+        # DB에서 중복 여부 확인
+        if DB.check_phone_exists(phone_number):
+            return jsonify({"message": "이미 사용 중인 전화번호입니다."}), 200
+        else:
+            return jsonify({"message": "사용 가능한 전화번호입니다."}), 200
+
+    except Exception as e:
+        # 예외 발생 시 로그 출력 및 오류 응답
+        logging.error(f"Error checking phone number: {e}")
+        return jsonify({"message": "전화번호 확인 중 문제가 발생했습니다."}), 500
+
+
 # 회원가입 처리
 @app.route("/service/signup", methods=['POST'])
 def service_signup():
+    print("Form Data:", request.form)  # 폼 데이터 전체 출력
+
     # 폼 데이터 가져오기
     id = request.form.get("id")
     password = request.form.get("password")
-    confirm_password = request.form.get("confirm-password")
+    print("Password from form:", password)
+    if not password:
+        return jsonify({"message": "비밀번호가 누락되었습니다."}), 400
+
     nickname = request.form.get("nickname")
     email = f"{request.form.get('email')}@{request.form.get('domain')}"
     if request.form.get("domain") == "custom":
@@ -152,9 +228,6 @@ def service_signup():
         [request.form.get('phone1'), request.form.get('phone2'), request.form.get('phone3')]) else None
     role = request.form.get("role")
 
-    # 비밀번호 확인
-    if password != confirm_password:
-        return jsonify({"message": "비밀번호가 일치하지 않습니다."}), 400
 
     # 사용자 중복 확인
     if DB.check_user_exists(id):
@@ -168,13 +241,13 @@ def service_signup():
     password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
 
     # 프로필 사진 처리 (옵션)
-    profile_pic_url = None  # 기본값 설정
+    profile_pic_url = "https://firebasestorage.googleapis.com/v0/b/codegreen-1211.appspot.com/o/profile_pics%2Fr.jpg?alt=media"
+
     if 'profile-pic' in request.files:
         file = request.files['profile-pic']
         if file.filename != '':  # 파일명이 비어 있지 않으면
             profile_pic_url = ST.upload_file_to_firebase(file)  # Firebase Storage에 업로드하고 URL 반환
 
-    # 사용자 데이터 삽입
     success = DB.insert_user(id, password_hash, nickname, email, phone, role, profile_pic_url)
     if success:
         return jsonify({"message": "회원가입이 성공적으로 완료되었습니다."}), 201
@@ -206,6 +279,12 @@ def service_login():
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
 
+        session['id'] = user["id"]
+        session['role'] = user["role"]
+        session['nickname'] = user["nickname"]
+        session["profile_pic"] = user["profile_pic"]
+        print(session.get('profile_pic'))
+
         # 최근 항목 가져오기
         try:
             recent_items = DB.get_recent_items(count=5)  # DB에서 최근 5개의 항목 가져오기
@@ -213,22 +292,15 @@ def service_login():
             print(f"Error fetching recent items: {e}")
             recent_items = []  # 오류 발생 시 빈 리스트 반환
 
-        if user["role"] == "seller":
-            # JWT 토큰을 클라이언트에 반환하고, 사용자 정보를 HTML 템플릿에 전달
-            return render_template(
-                "homeSeller.html",
-                user=user['nickname'],
-                recent_sales=recent_items,
-                token=token,
-                loggedIn=True)
-        else:
-            # JWT 토큰을 클라이언트에 반환하고, 사용자 정보를 HTML 템플릿에 전달
-            return render_template(
-                "homeBuyer.html",
-                user=user['nickname'],
-                recent_sales=recent_items,
-                token=token,
-                loggedIn=True)
+        # JWT 토큰을 클라이언트에 반환하고, 사용자 정보를 HTML 템플릿에 전달
+        return redirect(url_for(
+            'default',
+            user=user['nickname'],
+            recent_sales=recent_items,
+            profile_pic=session["profile_pic"],
+            token=token,
+            loggedIn=True)
+        )
 
     else:
         flash("잘못된 ID or PW")
@@ -240,18 +312,38 @@ def page_findid():
     return render_template("findId.html")
 
 # 아이디 찾기 처리
-@app.route("/service/findid", methods=['GET'])
+@app.route("/service/findid", methods=["GET"])
 def service_findid():
-    email = request.form.get("email")
+    email = request.args.get("email")  # GET 요청에서 이메일 가져오기
 
-    # 이메일로 아이디 찾기
-    if email in users:
-        id = users[email]["id"]
-        return render_template("findId.html", id=id, found=True, logged_in=False)
-    else:
-        return render_template("findId.html", error="가입되지 않은 회원입니다.", logged_in=False)
+    if not email:
+        return render_template(
+            "findId.html",
+            error="이메일을 입력해주세요."
+        )
 
-    return render_template("findId.html", logged_in=False)
+    try:
+        # 이메일로 사용자 조회
+        user = DB.find_user_by_email(email)
+
+        if user:
+            return render_template(
+                "findId.html",
+                found=True,
+                id=user["id"]
+            )
+        else:
+            return render_template(
+                "findId.html",
+                error="해당 이메일로 등록된 계정을 찾을 수 없습니다."
+            )
+
+    except Exception as e:
+        print(f"Error finding user by email: {e}")
+        return render_template(
+            "findId.html",
+            error="계정 조회 중 문제가 발생했습니다. 다시 시도해주세요."
+        )
 
 # 업로드 폴더 생성
 if not os.path.exists(UPLOAD_FOLDER):
@@ -283,14 +375,14 @@ def product_detail(product_name):
 
         if not product:
             logging.error(f"Product with name '{product_name}' not found.")
-            return f"Product '{product_name}' not found", 404
+            # return f"Product '{product_name}' not found", 404
 
-        return render_template(
-            "productDetailBuyer.html",
-            product=product,
-            logged_in=('id' in session),
-            user=session.get('nickname')
-        )
+            return render_template(
+                "productDetailBuyer.html",
+                product=product,
+                logged_in=('id' in session),
+                user=session.get('nickname')
+            )
         # 템플릿 렌더링: 역할에 따라 다른 템플릿 선택
         if 'id' in session:
             if session['role'] == 'seller':
@@ -363,12 +455,13 @@ def create_order():
 # 마이 페이지
 @app.route("/mypage")
 def view_review():
-    if session['role'] == 'seller':
-        return redirect(url_for('mypage_seller'))
-    elif session['role'] == 'buyer':
-        return redirect(url_for('mypage_buyer'))
+    if 'id' in session and 'role' in session and 'nickname' in session:
+        if session['role'] == 'seller':
+            return redirect(url_for('mypage_seller'))
+        elif session['role'] == 'buyer':
+            return redirect(url_for('mypage_buyer'))
     else:
-        return redirect(url_for("login_user"))
+        return redirect(url_for("page_login"))
 
 @app.route("/mypage/buyer")
 def mypage_buyer():
@@ -453,8 +546,8 @@ def service_browse():
         #     product["img_path"] = product.get("img_path", "default.jpg")
 
         # 템플릿 렌더링: 역할에 따라 다른 템플릿 선택
-        if hasattr(g, 'user') and g.user:
-            if g.user['role'] == 'seller':
+        if 'id' in session and 'role' in session and 'nickname' in session:
+            if session['role'] == 'seller':
                 return render_template(
                     "browseSeller.html",
                     products=products,
@@ -462,7 +555,7 @@ def service_browse():
                     total_pages=total_pages,
                     green_view=green_view,
                     logged_in=True,
-                    user=g.user['nickname']
+                    user=session['nickname']
                 )
             else:
                 return render_template(
@@ -472,8 +565,30 @@ def service_browse():
                     total_pages=total_pages,
                     green_view=green_view,
                     logged_in=True,
-                    user=g.user['nickname']
+                    user=session['nickname']
                 )
+
+        # if hasattr(g, 'user') and g.user:
+        #     if g.user['role'] == 'seller':
+        #         return render_template(
+        #             "browseSeller.html",
+        #             products=products,
+        #             page=page,
+        #             total_pages=total_pages,
+        #             green_view=green_view,
+        #             logged_in=True,
+        #             user=g.user['nickname']
+        #         )
+        #     else:
+        #         return render_template(
+        #             "browseBuyer.html",
+        #             products=products,
+        #             page=page,
+        #             total_pages=total_pages,
+        #             green_view=green_view,
+        #             logged_in=True,
+        #             user=g.user['nickname']
+        #         )
         else:
             return render_template(
                 "browseBuyer.html",
@@ -529,14 +644,9 @@ def register():
             "category": category,
             "description_short": description_short,
             "description_long": description_long,
-# <<<<<<< HEAD
-#             "img_path": image_filename
-# =======
-#             "category": category,
-#             "ewha_green": ewha_green,
-#             "img_path": image_filename,
-#             "seller_id": seller_id
-# >>>>>>> develop/team
+            "ewha_green": ewha_green,
+            "img_path": image_filename,
+            "seller_id": seller_id
         }
 
         # Firebase에 데이터 저장
@@ -556,7 +666,7 @@ def register():
 @app.route("/logout")
 def logout():
     session.clear()
-    return redirect(url_for("home"))
+    return redirect(url_for("default"))
 
 ### 세션 데모용 엔드포인트 주석 처리
 # @app.route('/service/review')
@@ -624,14 +734,14 @@ def service_reviews():
             if "img_path" not in review or not review["img_path"]:
                 review["img_path"] = "https://storage.googleapis.com/버킷네임수정필요/default.jpg"
 
-        if hasattr(g, 'user') and g.user:
-            if g.user['role'] == 'seller':
+        if 'id' in session and 'role' in session and 'nickname' in session:
+            if session['role'] == 'seller':
                 return render_template(
                     "productreviewsSeller.html",
                     page=page,
                     reviews=paginated_reviews,
                     logged_in=True,
-                    user=g.user['nickname']
+                    user=session['nickname']
                 )
             else:
                 return render_template(
@@ -639,8 +749,26 @@ def service_reviews():
                     page=page,
                     reviews=paginated_reviews,
                     logged_in=True,
-                    user=g.user['nickname']
+                    user=session['nickname']
                 )
+
+        # if hasattr(g, 'user') and g.user:
+        #     if g.user['role'] == 'seller':
+        #         return render_template(
+        #             "productreviewsSeller.html",
+        #             page=page,
+        #             reviews=paginated_reviews,
+        #             logged_in=True,
+        #             user=g.user['nickname']
+        #         )
+        #     else:
+        #         return render_template(
+        #             "productreviewsBuyer.html",
+        #             page=page,
+        #             reviews=paginated_reviews,
+        #             logged_in=True,
+        #             user=g.user['nickname']
+        #         )
 
         return render_template(
             "reviewList.html",
@@ -755,10 +883,16 @@ def register_review():
 @app.route('/service/reviews/<int:review_id>')
 def review_detail(review_id):
     review = DB.get_review_by_id(review_id)
-    if hasattr(g, 'user') and g.user:
-        nickname = g.user['nickname']
+
+    if 'id' in session and 'role' in session and 'nickname' in session:
+        nickname = session['nickname']
     else:
         nickname = "GUEST"
+
+    # if hasattr(g, 'user') and g.user:
+    #     nickname = g.user['nickname']
+    # else:
+    #     nickname = "GUEST"
 
     if review:
         return render_template(

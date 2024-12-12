@@ -22,9 +22,14 @@
     </ul>
     <div class="navbar__user">
       {% if logged_in %}
-        <span class="user__role buyer">seller</span>
-        <span class="user__nickname">{{ user }}</span>
-        <div class="user__avatar"></div>
+        <span class="user__role">{{role}}</span>
+        <span class="user__nickname">{{user}}</span>
+        <div class="user__avatar">
+        <img src="{{ session['profile_pic'] }}" alt="User Avatar">
+{#          <img src="{{profile_pic}}" alt="User Avatar">#}
+{#        <img src="https://storage.googleapis.com/codegreen-1211.firebasestorage.app/profile_pics/sw_.png" alt="User Avatar">#}
+
+        </div>
         <a href="/logout" class="logout-btn">Logout</a>
       {% else %}
         <a href="/page/login" class="login-btn">Login</a>

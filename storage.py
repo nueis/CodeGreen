@@ -16,11 +16,11 @@ class SThandler:
         if not firebase_admin._apps:  # 이미 초기화된 경우 다시 초기화하지 않음
             cred = credentials.Certificate(config)  # Firebase 인증 파일 경로
             firebase_admin.initialize_app(cred, {
-                'storageBucket': 'gs://codegreen-1211.firebasestorage.app'  # Firebase Storage 버킷 URL
+                'storageBucket': 'codegreen-1211.firebasestorage.app'  # Firebase Storage 버킷 URL
             })
 
     # 확장자 체크 함수
-    def allowed_file(filename):
+    def allowed_file(self, filename):
         return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 

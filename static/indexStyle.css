@@ -58,6 +58,14 @@ body {
   border-radius: 50%;
 }
 
+.user__avatar img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%; /* 원형으로 만들기 */
+  object-fit: cover;  /* 이미지 크기에 맞게 자르기 */
+}
+
+
 .login-btn {
   background-color: #556b2f;
   color: white;

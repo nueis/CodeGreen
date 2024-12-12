@@ -3,21 +3,32 @@ function storeJWT(token) {
     localStorage.setItem("auth_token", token);
 }
 
-// API 호출 시 JWT 토큰 사용 예시
-function fetchWithJWT(url) {
-    const token = localStorage.getItem("auth_token");
+async function fetchWithJWT(url, options = {}) {
+  const token = localStorage.getItem("jwt"); // localStorage에서 JWT 가져오기
 
-    if (token) {
-        fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + token  // 요청 헤더에 JWT 토큰 포함
-            }
-        })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error('Error:', error));
+  if (!token) {
+    throw new Error("JWT가 존재하지 않습니다. 로그인하세요.");
+  }
+
+  const headers = options.headers || {};
+  headers["Authorization"] = `Bearer ${token}`; // Authorization 헤더에 JWT 추가
+
+  // 옵션에 헤더를 병합
+  options.headers = headers;
+
+  // fetch 요청
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      alert("인증이 만료되었습니다. 다시 로그인해주세요.");
+      localStorage.removeItem("jwt"); // JWT 삭제
+      window.location.href = "/page/login"; // 로그인 페이지로 리다이렉트
     } else {
-        console.error("JWT token not found");
+      const errorData = await response.json();
+      throw new Error(errorData.message || "요청 실패");
     }
+  }
+
+  return await response.json();
 }

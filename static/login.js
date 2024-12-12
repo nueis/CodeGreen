@@ -1,7 +1,7 @@
 document.getElementById("login-form").addEventListener("submit", async (e) => {
   e.preventDefault(); // 기본 폼 제출 동작 방지
 
-  const id = document.getElementById("user-id").value;
+  const id = document.getElementById("id").value;
   const password = document.getElementById("password").value;
 
   try {
@@ -20,14 +20,16 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
       return;
     }
 
-    const data = await response.json();
-    const token = data.token;
+    return;
+    // const data = await response.json();
+    // const token = data.token;
 
-    // JWT 저장
-    localStorage.setItem("jwt", token);
+    // // JWT 저장
+    // localStorage.setItem("jwt", token);
 
-    // 로그인 성공 시 home.html로 리다이렉트
-    window.location.href = "/";
+    // 로그인 성공 시 리다이렉트
+    // window.location.href = "/default";
+
   } catch (error) {
     console.error("Error during login:", error);
     alert("아이디와 비밀번호를 올바르게 입력해주세요.");
