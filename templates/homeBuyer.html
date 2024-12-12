@@ -23,6 +23,18 @@
     </div>
 </section>
 
+<script>
+    // JWT 토큰을 JavaScript로 전달
+    const token = "{{ token }}";
+
+    // storeJWT 함수 호출
+    if (token) {
+        storeJWT(token);
+    } else {
+        console.error("Token not provided");
+    }
+</script>
+
 <script src="{{ url_for('static', filename='jwt-handler.js') }}"></script>
 
 {% endblock content %}

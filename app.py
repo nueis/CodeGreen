@@ -27,13 +27,13 @@ EXCLUDED_ENDPOINTS = [
     'default'
 ]
 
-@app.before_request
-def set_default_session_values():
-    """애플리케이션 시작 시 기본 세션 값 설정"""
-    session['id'] = 'test_user_id'
-    session['nickname'] = 'TestUser'
-    session['role'] = 'buyer'
-    # session['role'] = 'seller'
+# @app.before_request
+# def set_default_session_values():
+#     """애플리케이션 시작 시 기본 세션 값 설정"""
+#     session['id'] = 'test_user_id'
+#     session['nickname'] = 'TestUser'
+#     session['role'] = 'buyer'
+#     # session['role'] = 'seller'
 
 # 모든 요청 전에 실행되는 로직
 @app.before_request
@@ -84,16 +84,50 @@ def check_jwt_token():
 
 @app.route('/')
 def default():
-    # 세션에 role이 설정되어 있는지 확인
-    role = session.get('role', None)  # 기본값은 None으로 설정
+    #########################################################################################################
+    ####### 세션 시연용 code####################################################################################
+    #########################################################################################################
 
-    if role == 'buyer':
-        return render_template("homeBuyer.html", loggedIn=True, user=session.get('nickname', 'GUEST'))
-    elif role == 'seller':
-        return render_template("homeSeller.html", loggedIn=True, user=session.get('nickname', 'GUEST'))
-    else:
-        # role 값이 없거나 잘못된 경우 기본값으로 GUEST 처리
-        return render_template("homeBuyer.html", loggedIn=False, user="GUEST")
+    # # 세션에 role이 설정되어 있는지 확인
+    # role = session.get('role', None)  # 기본값은 None으로 설정
+    #
+    # if role == 'buyer':
+    #     return render_template("homeBuyer.html", loggedIn=True, user=session.get('nickname', 'GUEST'))
+    # elif role == 'seller':
+    #     return render_template("homeSeller.html", loggedIn=True, user=session.get('nickname', 'GUEST'))
+    # else:
+    #     # role 값이 없거나 잘못된 경우 기본값으로 GUEST 처리
+    #     return render_template("homeBuyer.html", loggedIn=False, user="GUEST")
+
+    #########################################################################################################
+    ####### 프로덕선용 code####################################################################################
+    #########################################################################################################
+
+    recent_sales = DB.get_recent_items(5)
+
+    if hasattr(g, 'user') and g.user:
+
+        if g.user['role'] == 'seller':
+            return render_template(
+                "homeSeller.html",
+                logged_in=True,
+                user=g.user['nickname'],
+                recent_sales=recent_sales
+            )
+
+        else:
+            return render_template(
+                "homeBuyer.html",
+                logged_in=True,
+                user=g.user['nickname'],
+                recent_sales=recent_sales
+            )
+    return render_template(
+        "homeBuyer.html",
+        logged_in=False,
+        user="GUEST",
+        recent_sales=recent_sales
+    )
 
 
 # 회원가입 페이지
@@ -170,12 +204,29 @@ def service_login():
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
 
+        # 최근 항목 가져오기
+        try:
+            recent_items = DB.get_recent_items(count=5)  # DB에서 최근 5개의 항목 가져오기
+        except Exception as e:
+            print(f"Error fetching recent items: {e}")
+            recent_items = []  # 오류 발생 시 빈 리스트 반환
+
         if user["role"] == "seller":
             # JWT 토큰을 클라이언트에 반환하고, 사용자 정보를 HTML 템플릿에 전달
-            return render_template("homeSeller.html", user=user['nickname'], token=token, loggedIn=True)
+            return render_template(
+                "homeSeller.html",
+                user=user['nickname'],
+                recent_sales=recent_items,
+                token=token,
+                loggedIn=True)
         else:
             # JWT 토큰을 클라이언트에 반환하고, 사용자 정보를 HTML 템플릿에 전달
-            return render_template("homeBuyer.html", user=user['nickname'], token=token, loggedIn=True)
+            return render_template(
+                "homeBuyer.html",
+                user=user['nickname'],
+                recent_sales=recent_items,
+                token=token,
+                loggedIn=True)
 
     else:
         flash("잘못된 ID or PW")
@@ -216,14 +267,6 @@ users = {}
 #         "phone": "1234567890"
 #     }
 # }
-
-# @app.route("/index")
-# def index():
-#     return render_template("indexSeller.html", logged_in=('id' in session), user=session.get('nickname'))
-
-@app.route("/index")
-def index():
-    return render_template("indexSeller.html", logged_in=('id' in session), user=session.get('nickname'))
 
 @app.route("/", methods=['GET', 'POST'])
 def home():
