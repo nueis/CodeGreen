@@ -1026,4 +1026,4 @@ def unlike(name):
     return jsonify({'msg': '좋아요 취소!'})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
