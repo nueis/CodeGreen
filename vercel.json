@@ -14,12 +14,5 @@
     { "src": "/static/(.*)", "dest": "/static/$1" },
     { "src": "/(.*)", "dest": "api/app.py" }
   ],
-  "build": {
-    "env": {
-      "GH_TOKEN": "@GH_TOKEN"
-    },
-    "commands": [
-      "git submodule update --init --recursive"
-    ]
-  }
+  "buildCommand": "bash build.sh"
 }
