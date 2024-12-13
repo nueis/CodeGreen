@@ -743,9 +743,9 @@ def service_reviews():
         #     review["img_path"] = review.get("img_path", "default.jpg")
 
         # Default handling for missing image URLs
-        for review in paginated_reviews:
-            if "img_url" not in review or not review["img_url"]:
-                review["img_url"] = "https://storage.googleapis.com/버킷네임수정필요/default.jpg"
+        # for review in paginated_reviews:
+        #     if "img_url" not in review or not review["img_url"]:
+        #         review["img_url"] = "https://storage.googleapis.com/버킷네임수정필요/default.jpg"
 
         if 'id' in session and 'role' in session and 'nickname' in session:
             if session['role'] == 'seller':
