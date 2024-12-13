@@ -96,6 +96,7 @@ def default():
     # 세션에 role이 설정되어 있는지 확인
     role = session.get('role', None)  # 기본값은 None으로 설정
     recent_sales = DB.get_recent_items(5)
+    print(recent_sales)
 
     if role == 'seller':
         return render_template(

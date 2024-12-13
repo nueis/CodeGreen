@@ -15,7 +15,8 @@
     <div class="product-list">
         {% for product in recent_sales %}
         <div class="product">
-            <img src="{{ url_for('static', filename='uploads/' ~ product['img_path']) }}" alt="{{ product['name'] }}">
+            <img src="{{ product['img_url'] }}" alt="{{ product['name'] }}">
+{#            <img src="{{ url_for('static', filename='uploads/' ~ product['img_path']) }}" alt="{{ product['name'] }}">#}
             <br><b>{{ product['name'] }}</b><br>
             <p>₩ {{ product.price | int }}</p>
         </div>
