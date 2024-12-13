@@ -19,7 +19,7 @@ app.secret_key = SECRET_KEY
 
 
 # 업로드할 파일의 저장 경로 설정
-UPLOAD_FOLDER = os.path.join('static', 'uploads')
+UPLOAD_FOLDER = os.path.join('../static', 'uploads')
 
 # JWT 검증 제외 경로 리스트
 EXCLUDED_ENDPOINTS = [

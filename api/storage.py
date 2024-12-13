@@ -3,14 +3,14 @@ from firebase_admin import credentials, storage
 from werkzeug.utils import secure_filename
 
 # 업로드할 파일의 저장 경로 설정
-UPLOAD_FOLDER = os.path.join('static', 'uploads')
+UPLOAD_FOLDER = os.path.join('../static', 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 class SThandler:
 
     def __init__(self):
         # Firebase Admin SDK 초기화
-        with open('./configuration/codegreen-1211-firebase-adminsdk-mytx5-d061b9d4ce.json') as f:
+        with open('../configuration/codegreen-1211-firebase-adminsdk-mytx5-d061b9d4ce.json') as f:
             config = json.load(f)
 
         if not firebase_admin._apps:  # 이미 초기화된 경우 다시 초기화하지 않음

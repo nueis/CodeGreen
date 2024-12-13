@@ -3,7 +3,7 @@ import json
 
 class DBhandler:
     def __init__(self):
-        with open('./configuration/firebase_auth.json') as f:
+        with open('../configuration/firebase_auth.json') as f:
             config = json.load(f)
 
         # Firebase 초기화
