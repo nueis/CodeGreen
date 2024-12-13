@@ -7,7 +7,6 @@
     <list default="true" id="7947c1bf-824a-482d-a724-04e16a1c827d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/productreviewsStyle.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/productreviewsStyle.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/productreviewsBuyer.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/productreviewsBuyer.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/productreviewsSeller.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/productreviewsSeller.html" afterDir="false" />
     </list>
@@ -124,7 +123,7 @@
       <workItem from="1733466411574" duration="5332000" />
       <workItem from="1733760321540" duration="4427000" />
       <workItem from="1733765589850" duration="6502000" />
-      <workItem from="1734009863931" duration="33265000" />
+      <workItem from="1734009863931" duration="33789000" />
     </task>
     <servers />
   </component>

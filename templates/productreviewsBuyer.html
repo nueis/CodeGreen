@@ -30,7 +30,7 @@
                             <h2 class="review-title">{{ review['review_title'] }}</h2>
                             <p class="review-author">{{ review['user_nickname'] }}</p>
                         </div>
-                        <a href="#" class="view-more">전체 보기 ></a>
+                        <a class="view-more" onclick="location.href='{{ url_for('review_detail', review_id=review['review_id']) }}'">전체 보기 ></a>
                         <p class="review-date">작성 날짜: {{ review['review_date'] }}</p>
                     </div>
                 </div>

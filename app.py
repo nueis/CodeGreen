@@ -747,6 +747,8 @@ def service_reviews():
         #     if "img_url" not in review or not review["img_url"]:
         #         review["img_url"] = "https://storage.googleapis.com/버킷네임수정필요/default.jpg"
 
+        print(reviews)
+
         if 'id' in session and 'role' in session and 'nickname' in session:
             if session['role'] == 'seller':
                 return render_template(
