@@ -4,7 +4,6 @@
   box-sizing: border-box;
 }
 
-
 body {
   font-family: Arial, sans-serif;
   background-color: white;
@@ -47,25 +46,29 @@ body {
   font-size: 18px;
 }
 
-.profile {
+/* 버튼 공통 스타일 */
+.sidebar button,
+.sidebar .sidebtn {
+  display: inline-block; /* a 태그와 button 태그의 일관성 유지 */
+  text-align: center;
   margin-top: 20px;
-  padding: 10px;
-  background-color: #36AE92;
-  border: none;
-  color: white;
-  cursor: pointer;
-  width: 100%;
-  border-radius: 5px;
-}
-.sidebtn {
-  margin-top: 20px;
-  padding: 10px;
+  padding: 10px 15px;
   background-color: #00462a;
   border: none;
   color: white;
   cursor: pointer;
-  width: 100%;
+  width: 100%; /* 버튼이 전체 너비에 맞게 확장됨 */
   border-radius: 5px;
+  font-size: 16px;
+  text-decoration: none; /* a 태그의 밑줄 제거 */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* hover 효과 추가 */
+}
+
+/* hover 효과 */
+.sidebar button:hover,
+.sidebar .sidebtn:hover {
+  background-color: #36AE92; /* hover 시 버튼 색상 변경 */
+  transform: scale(1.05); /* 약간 커지는 효과 */
 }
 
 .main-board {
@@ -74,14 +77,21 @@ body {
 }
 
 .mainbtn {
-  padding:5px;
+  padding: 5px;
   background-color: #00462a;
-  border:none;
+  border: none;
   color: white;
   cursor: pointer;
   border-radius: 5px;
-  font-size:15px;
+  font-size: 15px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
+.mainbtn:hover {
+  background-color: #36AE92;
+  transform: scale(1.05);
+}
+
 .myinfo {
   display: flex;
   justify-content: space-between;
@@ -131,5 +141,5 @@ body {
 
 .sales-list table th {
   background-color: #00462a;
-  color:white;
+  color: white;
 }

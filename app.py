@@ -487,23 +487,62 @@ def mypage_buyer():
         user=session.get('nickname')
     )
 
+# @app.route("/mypage/seller")
+# def mypage_seller():
+#     if 'id' not in session or session.get('role') != 'seller':
+#         return redirect(url_for('login_user'))
+#
+#     seller_id = session['id']
+#     orders = DB.get_orders_by_user(seller_id, role="seller")  # 판매자 주문 데이터 가져오기
+#     total_orders = len(orders)  # 총 주문 수 계산
+#
+#     reviews = DB.get_reviews_by_seller_id(seller_id)
+#     total_reviews = len(reviews)
+#
+#     print(reviews)
+#     print(orders)
+#     print(total_reviews)
+#     print(total_orders)
+#
+#     return render_template(
+#         "mypageSell.html",
+#         orders=orders,
+#         total_orders=total_orders,
+#         total_reviews=total_reviews,
+#         logged_in=True,
+#         user=session.get('nickname')
+#     )
+
 @app.route("/mypage/seller")
 def mypage_seller():
     if 'id' not in session or session.get('role') != 'seller':
         return redirect(url_for('login_user'))
 
     seller_id = session['id']
-    orders = DB.get_orders_by_user(seller_id, role="seller")  # 판매자 주문 데이터 가져오기
+
+    # 판매자가 등록한 상품 리스트 가져오기
+    products = DB.get_items_by_seller_id(seller_id)
+
+    # 판매자 주문 데이터 가져오기
+    orders = DB.get_orders_by_user(seller_id, role="seller")
     total_orders = len(orders)  # 총 주문 수 계산
 
+    # 판매자 리뷰 데이터 가져오기
     reviews = DB.get_reviews_by_seller_id(seller_id)
     total_reviews = len(reviews)
+
+    print("Reviews:", reviews)
+    print("Orders:", orders)
+    print("Total Reviews:", total_reviews)
+    print("Total Orders:", total_orders)
+    print("Products:", products)
 
     return render_template(
         "mypageSell.html",
         orders=orders,
         total_orders=total_orders,
         total_reviews=total_reviews,
+        products=products,  # 템플릿에 전달
         logged_in=True,
         user=session.get('nickname')
     )
@@ -658,7 +697,8 @@ def register():
                 "description_long": description_long,
                 "category": category,
                 "ewha_green": ewha_green,
-                "img_url": image_url
+                "img_url": image_url,
+                "seller_id": seller_id
             }
             # Firebase Database에 데이터 저장
             product_id = str(len(DB.get_items()) + 1)
@@ -787,7 +827,8 @@ def service_reviews():
         #         )
 
         return render_template(
-            "reviewList.html",
+            # "reviewList.html",
+            "productreviewsBuyer.html",
             reviews=paginated_reviews,
             page=page,
             total_pages=total_pages,
@@ -840,12 +881,26 @@ def myreview_list():
         logging.error(f"Error loading reviews: {e}")
         return f"Error loading reviews: {str(e)}", 500
 
-@app.route("/reviews/register/<name>/")
+# @app.route("/reviews/register/<name>/")
+# def register_review_init(name):
+#     user_id = session.get('id')
+#     user_nickname = session.get('nickname')
+#     product = DB.get_item_by_name(name)
+#     print(name)
+#     print("product", product)
+#     return render_template("reviewRegister.html",
+#                            product=product,
+#                            user_id=user_id,
+#                            user_nickname=user_nickname,
+#                            user=user_nickname,
+#                            logged_in=('id' in session))
+
+@app.route("/reviews/register/<path:name>/")
 def register_review_init(name):
     user_id = session.get('id')
     user_nickname = session.get('nickname')
+    print(f"Received name: {name}")  # 디버깅용 출력
     product = DB.get_item_by_name(name)
-    print(name)
     print("product", product)
     return render_template("reviewRegister.html",
                            product=product,
@@ -853,6 +908,7 @@ def register_review_init(name):
                            user_nickname=user_nickname,
                            user=user_nickname,
                            logged_in=('id' in session))
+
 
 @app.route('/reviews/register', methods = ['GET', 'POST'])
 def register_review():
@@ -863,7 +919,12 @@ def register_review():
         rating = request.form.get("rating", type=int) 
         purchase_date = request.form.get("purchase_date")
         product_name = request.form.get("product_name")
-        seller_id = request.form.get("seller_id")
+        product = DB.get_item_by_name(product_name)
+        seller_id = product["seller_id"]
+
+        print(product)
+        print(seller_id)
+        print(product_name)
 
         # # 이미지 파일 처리
         # image = request.files['image']

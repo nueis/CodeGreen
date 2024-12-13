@@ -161,6 +161,29 @@ class DBhandler:
             print(f"Error retrieving item by name '{product_name}': {e}")
             return None
 
+    def get_items_by_seller_id(self, seller_id):
+        try:
+            items = self.db.child("items").get()  # Firebase에서 모든 상품 데이터를 가져옵니다.
+            if not items.each():
+                print(f"No items found for seller {seller_id}.")
+                return []
+
+            # seller_id에 해당하는 상품 필터링
+            seller_items = []
+            for item in items.each():
+                if item is None:
+                    continue
+
+                data = item.val()  # 현재 상품 데이터 가져오기
+                if data and data.get("seller_id") == seller_id:
+                    seller_items.append(data)
+
+            print(f"Items for seller {seller_id} successfully retrieved.")
+            return seller_items
+        except Exception as e:
+            print(f"Error retrieving items for seller {seller_id}: {e}")
+            return []
+
     def insert_review(self, review_id, review_data):
         try:
             self.db.child("reviews").child(review_id).set(review_data)
@@ -238,16 +261,38 @@ class DBhandler:
             print(f"Error retrieving reviews for buyer {buyer_id}: {e}")
             return []
 
+    # def get_reviews_by_seller_id(self, seller_id):
+    #     try:
+    #         reviews = self.db.child("reviews").get().val()
+    #         if not reviews:
+    #             return []
+    #         return [review for review in reviews.values() if review.get("seller_id") == seller_id]
+    #     except Exception as e:
+    #         print(f"Error retrieving reviews for seller {seller_id}: {e}")
+    #         return []
+
     def get_reviews_by_seller_id(self, seller_id):
         try:
             reviews = self.db.child("reviews").get().val()
+
+            # reviews가 None이면 빈 리스트 반환
             if not reviews:
                 return []
-            return [review for review in reviews.values() if review.get("seller_id") == seller_id]
+
+            # reviews가 list인지 dict인지 확인
+            if isinstance(reviews, list):
+                # 리스트의 경우 각 요소가 딕셔너리인지 확인 후 필터링
+                return [review for review in reviews if review and review.get("seller_id") == seller_id]
+            elif isinstance(reviews, dict):
+                # 딕셔너리의 경우 values()로 필터링
+                return [review for review in reviews.values() if review.get("seller_id") == seller_id]
+            else:
+                print(f"Unexpected data type for reviews: {type(reviews)}")
+                return []
         except Exception as e:
             print(f"Error retrieving reviews for seller {seller_id}: {e}")
             return []
-                
+
     # home 화면 recent sales 부분 추가
     def get_recent_items(self, count=5):
         try:

@@ -1,108 +1,156 @@
-.form-page {
-    padding-top: 40px; /* Ensures space for the fixed navbar */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  line-height: 1.8;
+  color: #333;
 }
 
-.form-page h1 {
-    position: relative;
-    top: -20px; /* 제목만 위로 이동 */
-    margin-left: 20px; /* 제목을 오른쪽으로 이동 */
-    margin-bottom: 20px; /* 아래 항목과의 간격 조정 */
+.container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #00462a;
+  font-size: 28px;
+  margin-bottom: 20px;
+  font-weight: bold;
 }
 
 .form-container {
-    display: flex;
-    justify-content: space-evenly;
-    width: 100%;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    padding-left: 85px; /* 왼쪽 테두리와의 간격 추가 */
-    margin-top: -20px; /* 폼 전체를 위로 이동 */
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
 }
-
 
 .left-column, .right-column {
-    width: 48%;
+  flex: 1;
+  min-width: 45%;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.left-column label, 
-.right-column label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 2px; /* 라벨 아래의 간격 조정 */
-    color: #666;
+label {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+  display: inline-block;
 }
 
-.left-column input, 
-.left-column select, 
-.right-column input, 
-.right-column select, 
-.right-column textarea {
-    width: 70%;
-    padding: 8px;
-    margin-top: 5px; /* 라벨과 입력 필드 사이의 간격 */
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-sizing: border-box;
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
 }
 
-/* 수정된 부분: submit 버튼 스타일 */
-form input[type="submit"] {
-    background-color: green;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    min-width: 50%; /* 너비 설정 */
-    display: block; /* 블록 요소로 설정 */
-    margin: 0 0 0 0 10%; /* 왼쪽으로 약간 이동 */
+input[type="file"] {
+  padding: 5px;
+}
+
+input[type="submit"] {
+  background-color: #36AE92;
+  color: white;
+  border: none;
+  padding: 15px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  text-align: center;
+}
+
+input[type="submit"]:hover {
+  background-color: #00462a;
+}
+
+img#preview {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  margin-bottom: 15px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+textarea {
+  resize: none;
+  height: 150px;
 }
 
 
-form input[type="submit"]:hover {
-    background-color: #36b300cb;
+.side-title {
+  font-size: 18px;
+  color: #00462a;
+  font-weight: bold;
+  margin-bottom: 15px;
 }
 
-#preview {
-    width: 150px; /* 정사각형의 가로 크기 */
-    height: 150px; /* 정사각형의 세로 크기 */
-    object-fit: cover; /* 이미지가 정사각형을 벗어나지 않도록 잘림 */
-    border-radius: 10px; /* 모서리를 둥글게 하려면 숫자 조정 */
+.checkbox-label {
+  display: flex;
+  /*align-items: center;*/
+  /*justify-content: center;*/
+  gap: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 15px;
+  color: #333;
+  cursor: pointer; /* 커서 변경 */
 }
 
-
-/* 기본 체크박스 스타일 숨김 */
-input[type="checkbox"] {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    width: 50px;
-    height: 20px;
-    border: 2px solid #ccc;
-    border-radius: 5px;
-    outline: none;
-    cursor: pointer;
-    transition: 0.2s;
-    position: relative;
+.checkbox-label input[type="checkbox"] {
+  appearance: none; /* 기본 체크박스 스타일 제거 */
+  width: 30px;
+  height: 30px;
+  border: 2px solid #36AE92;
+  border-radius: 5px; /* 모서리를 둥글게 */
+  background-color: #f9f9f9;
+  cursor: pointer;
+  /*transition: all 0.3s ease;*/
 }
 
-/* 체크박스에 체크되었을 때 스타일 */
-input[type="checkbox"]:checked {
-    background-color: green;
-    border-color: green;
-    position: relative;
+.checkbox-label input[type="checkbox"]:checked {
+  background-color: #36AE92;
+  border-color: #00462a;
+  position: relative;
 }
 
-/* 체크박스 안에 'ewhagreen' 글씨 추가 */
-input[type="checkbox"]:checked::after {
-    content: 'ewhagreen';
-    color: white;
-    font-size: 8px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-weight: bold;
-    text-align: center;
+.checkbox-label input[type="checkbox"]:checked::before {
+  content: "✓";
+  position: absolute;
+  color: white;
+  font-size: 20px;
+  left: 7px; /* 중앙 정렬 */
+  top: 2px; /* 중앙 정렬 */
+  transition: all 0.3s ease;
+}
+
+.checkbox-label span {
+  font-size: 16px;
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+.checkbox-label:hover span {
+  color: #00462a;
+}
+
+@media (max-width: 768px) {
+  .checkbox-label input[type="checkbox"] {
+    width: 40px;
+    height: 40px;
+  }
+
+  .checkbox-label span {
+    font-size: 20px;
+  }
 }
